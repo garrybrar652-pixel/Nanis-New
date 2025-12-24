@@ -56,7 +56,7 @@ const CampaignsEmptyState = () => {
       {/* Action Buttons */}
       <div className="flex gap-[16px] items-center">
         <PrimaryButton
-          disabled
+          onClick={() => navigate('/campaigns/create')}
           icon={<Plus className="w-[18px] h-[18px] text-white" />}
         >
           Create new campaign

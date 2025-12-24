@@ -3,7 +3,6 @@ import MainLayout from '../components/layout/MainLayout';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Campaigns from '../pages/Campaigns/Campaigns';
 import CreateCampaign from '../pages/Campaigns/CreateCampaign';
-import EmailCampaignWizard from '../pages/Campaigns/EmailCampaignWizard';
 import Automation from '../pages/Automation/Automation';
 import Inbox from '../pages/Inbox/Inbox';
 import Analytics from '../pages/Analytics/Analytics';
@@ -57,10 +56,6 @@ const router = createBrowserRouter([
       {
         path: 'campaigns/create',
         element: <CreateCampaign />
-      },
-      {
-        path: 'campaigns/create/email',
-        element: <EmailCampaignWizard />
       },
       {
         path: 'automation',
