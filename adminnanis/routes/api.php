@@ -26,13 +26,6 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Public Campaign Routes (for testing - remove auth temporarily)
-Route::prefix('campaigns')->group(function () {
-    Route::get('/', [CampaignController::class, 'index']);
-    Route::get('/statistics', [CampaignController::class, 'statistics']);
-    Route::get('/{id}', [CampaignController::class, 'show']);
-});
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user/profile', [AuthController::class, 'profile']);
@@ -40,7 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Protected Campaign Routes
     Route::prefix('campaigns')->group(function () {
+        Route::get('/', [CampaignController::class, 'index']);
         Route::post('/', [CampaignController::class, 'store']);
+        Route::get('/statistics', [CampaignController::class, 'statistics']);
+        Route::get('/{id}', [CampaignController::class, 'show']);
         Route::put('/{id}', [CampaignController::class, 'update']);
         Route::delete('/{id}', [CampaignController::class, 'destroy']);
         Route::post('/{id}/schedule', [CampaignController::class, 'schedule']);

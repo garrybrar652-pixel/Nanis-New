@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Grid, List, Filter, ChevronDown, MoreVertical, Loader2, AlertCircle } from 'lucide-react';
 import BadgeOfCategory from '../../components/campaigns/BadgeOfCategory';
 import BadgeOfStatus from '../../components/campaigns/BadgeOfStatus';
+import CampaignsEmptyState from '../../components/campaigns/CampaignsEmptyState';
 import { useCampaigns } from '../../hooks/useCampaigns';
 
 const Campaigns = () => {
@@ -87,7 +88,9 @@ const Campaigns = () => {
     { name: 'Email Campaigns' },
     { name: 'Website Campaigns' },
     { name: 'SMS Campaigns' },
-    { name: 'Social Media Campaigns' }
+    { name: 'Social Media Campaigns' },
+    { name: 'RSS Campaigns' },
+    { name: 'A/B Testing Campaigns' }
   ];
 
   const statusOptions = ['draft', 'scheduled', 'sending', 'published', 'suspended'];
@@ -127,7 +130,9 @@ const Campaigns = () => {
       'Email Campaigns': 'Email campaign',
       'Website Campaigns': 'Website campaign',
       'SMS Campaigns': 'SMS Campaign',
-      'Social Media Campaigns': 'Social media campaign'
+      'Social Media Campaigns': 'Social media campaign',
+      'RSS Campaigns': 'RSS Campaign',
+      'A/B Testing Campaigns': 'A/B Testing Campaign'
     };
     return mapping[tab];
   };
@@ -167,6 +172,16 @@ const Campaigns = () => {
   const getStatusCount = (status) => {
     return filteredCampaignData[status]?.length || 0;
   };
+
+  // Check if there are any campaigns at all (regardless of filters)
+  const hasAnyCampaigns = useMemo(() => {
+    return Object.values(campaignData).some(campaigns => campaigns.length > 0);
+  }, [campaignData]);
+
+  // Check if filtered results have any campaigns
+  const hasFilteredCampaigns = useMemo(() => {
+    return Object.values(filteredCampaignData).some(campaigns => campaigns.length > 0);
+  }, [filteredCampaignData]);
 
   // Campaign Card Component
   const CampaignCard = ({ campaign, showStatus = true }) => (
@@ -359,220 +374,244 @@ const Campaigns = () => {
         </div>
       </div>
 
-      {/* Campaign View - Grid or List */}
-      {viewMode === 'grid' ? (
-        selectedStatuses.length <= 2 ? (
-          /* Grid Layout for 1-2 statuses - Fills white space */
-          <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="pb-[12px] sm:pb-[20px]">
-              {/* Status Headers */}
-              <div className="flex flex-wrap gap-[16px] mb-[20px]">
-                {selectedStatuses.map((status) => (
-                  getStatusCount(status) > 0 && (
-                    <div key={status} className="flex items-center gap-[8px]">
-                      <BadgeOfStatus badge={statusDisplayNames[status]} />
-                      <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                        <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                          {getStatusCount(status)}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                ))}
-              </div>
-
-              {/* Campaigns Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[12px] sm:gap-[16px]">
-                {Object.entries(filteredCampaignData)
-                  .filter(([status]) => selectedStatuses.includes(status))
-                  .map(([status, campaigns]) =>
-                    campaigns.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={true} />
-                    ))
-                  )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* Column Layout for 3+ statuses - Kanban Board */
-          <div className="flex-1 overflow-x-auto overflow-y-auto min-h-0">
-            <div className="flex gap-[12px] sm:gap-[16px] items-start pb-[12px] sm:pb-[20px] min-w-min">
-              {/* Draft Column */}
-              {selectedStatuses.includes('draft') && (
-                <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
-                  <div className="flex items-center justify-between px-[4px] mb-[16px]">
-                    <BadgeOfStatus badge="Draft" />
-                    <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                      <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                        {getStatusCount('draft')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    {filteredCampaignData.draft.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Scheduled Column */}
-              {selectedStatuses.includes('scheduled') && (
-                <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
-                  <div className="flex items-center justify-between px-[4px] mb-[16px]">
-                    <BadgeOfStatus badge="Scheduled" />
-                    <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                      <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                        {getStatusCount('scheduled')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    {filteredCampaignData.scheduled.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sending Column */}
-              {selectedStatuses.includes('sending') && (
-                <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
-                  <div className="flex items-center justify-between px-[4px] mb-[16px]">
-                    <BadgeOfStatus badge="Sending" />
-                    <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                      <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                        {getStatusCount('sending')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    {filteredCampaignData.sending.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Published Column */}
-              {selectedStatuses.includes('published') && (
-                <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
-                  <div className="flex items-center justify-between px-[4px] mb-[16px]">
-                    <BadgeOfStatus badge="Published" />
-                    <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                      <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                        {getStatusCount('published')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    {filteredCampaignData.published.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Suspended Column */}
-              {selectedStatuses.includes('suspended') && (
-                <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
-                  <div className="flex items-center justify-between px-[4px] mb-[16px]">
-                    <BadgeOfStatus badge="Suspended" />
-                    <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
-                      <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
-                        {getStatusCount('suspended')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    {filteredCampaignData.suspended.map((campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )
-      ) : (
-        /* List View - Table */
-        <div className="flex-1 overflow-y-auto">
-          <div className="w-full">
-            <div className="bg-white rounded-[12px] overflow-hidden border border-[#e1e4ea]">
-              {/* Table Header */}
-              <div className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 bg-[#f8f8f8] border-b border-[#e1e4ea] font-medium text-[12px] text-[#64748b] uppercase tracking-wider min-w-[900px]">
-                <div></div>
-                <div>Campaign</div>
-                <div>Category</div>
-                <div>Status</div>
-                <div>Last Edited</div>
-                <div>Subject</div>
-                <div className="text-center">Actions</div>
-              </div>
-
-              {/* Table Body */}
-              <div className="divide-y divide-[#e1e4ea]">
-                {Object.entries(filteredCampaignData)
-                  .filter(([status]) => selectedStatuses.includes(status))
-                  .map(([status, campaigns]) =>
-                    campaigns.map((campaign) => (
-                      <div
-                        key={campaign.id}
-                        className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 hover:bg-[#f8f8f8] transition-colors items-center min-w-[900px]"
-                      >
-                        {/* Emoji */}
-                        <div className="text-[20px] flex-shrink-0">{campaign.emoji}</div>
-
-                        {/* Campaign Name */}
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-medium text-[14px] text-[#0e121b] truncate">
-                            {campaign.name}
-                          </span>
-                        </div>
-
-                        {/* Category */}
-                        <div className="flex items-center">
-                          <BadgeOfCategory category={campaign.category} />
-                        </div>
-
-                        {/* Status */}
-                        <div className="flex items-center">
-                          <BadgeOfStatus badge={statusDisplayNames[status] || status} />
-                        </div>
-
-                        {/* Last Edited */}
-                        <div className="text-[12px] text-[#64748b]">
-                          <div className="truncate">{campaign.lastEdited}</div>
-                        </div>
-
-                        {/* Subject */}
-                        <div className="text-[14px] text-[#0e121b] min-w-0">
-                          <div className="truncate">{campaign.subject}</div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex justify-center items-center">
-                          <button
-                            className="w-[32px] h-[32px] flex items-center justify-center hover:bg-[#f2f2f2] rounded-lg transition-colors"
-                            aria-label="More options"
-                          >
-                            <MoreVertical className="w-[18px] h-[18px] text-[#64748b]" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-              </div>
-
-              {/* Empty State */}
-              {Object.values(filteredCampaignData).every(arr => arr.length === 0) && (
-                <div className="py-16 text-center">
-                  <p className="text-[#64748b] text-[14px]">No campaigns found</p>
-                </div>
-              )}
-            </div>
-          </div>
+      {/* Empty State - Show when NO campaigns exist at all */}
+      {!hasAnyCampaigns && (
+        <div className="flex-1 flex items-center justify-center">
+          <CampaignsEmptyState />
         </div>
+      )}
+
+      {/* Campaign Views - Only show when campaigns exist */}
+      {hasAnyCampaigns && (
+        <>
+          {/* No Results Message - Show when campaigns exist but filters return nothing */}
+          {!hasFilteredCampaigns && (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="w-16 h-16 bg-[#f2f2f2] rounded-full flex items-center justify-center">
+                  <Filter className="w-8 h-8 text-[#64748b]" />
+                </div>
+                <div>
+                  <p className="text-[#0e121b] font-medium text-[16px] mb-2">No campaigns match your filters</p>
+                  <p className="text-[#64748b] text-[14px]">Try adjusting your status or category filters</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Campaign Grid or List View */}
+          {hasFilteredCampaigns && (
+            <>
+              {viewMode === 'grid' ? (
+                selectedStatuses.length <= 2 ? (
+                  /* Grid Layout for 1-2 statuses - Fills white space */
+                  <div className="flex-1 overflow-y-auto min-h-0">
+                    <div className="pb-[12px] sm:pb-[20px]">
+                      {/* Status Headers */}
+                      <div className="flex flex-wrap gap-[16px] mb-[20px]">
+                        {selectedStatuses.map((status) => (
+                          getStatusCount(status) > 0 && (
+                            <div key={status} className="flex items-center gap-[8px]">
+                              <BadgeOfStatus badge={statusDisplayNames[status]} />
+                              <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                                <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                  {getStatusCount(status)}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        ))}
+                      </div>
+
+                      {/* Campaigns Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[12px] sm:gap-[16px]">
+                        {Object.entries(filteredCampaignData)
+                          .filter(([status]) => selectedStatuses.includes(status))
+                          .map(([status, campaigns]) =>
+                            campaigns.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={true} />
+                            ))
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Column Layout for 3+ statuses - Kanban Board */
+                  <div className="flex-1 overflow-x-auto overflow-y-auto min-h-0">
+                    <div className="flex gap-[12px] sm:gap-[16px] items-start pb-[12px] sm:pb-[20px] min-w-min">
+                      {/* Draft Column */}
+                      {selectedStatuses.includes('draft') && (
+                        <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
+                          <div className="flex items-center justify-between px-[4px] mb-[16px]">
+                            <BadgeOfStatus badge="Draft" />
+                            <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                              <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                {getStatusCount('draft')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            {filteredCampaignData.draft.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Scheduled Column */}
+                      {selectedStatuses.includes('scheduled') && (
+                        <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
+                          <div className="flex items-center justify-between px-[4px] mb-[16px]">
+                            <BadgeOfStatus badge="Scheduled" />
+                            <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                              <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                {getStatusCount('scheduled')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            {filteredCampaignData.scheduled.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Sending Column */}
+                      {selectedStatuses.includes('sending') && (
+                        <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
+                          <div className="flex items-center justify-between px-[4px] mb-[16px]">
+                            <BadgeOfStatus badge="Sending" />
+                            <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                              <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                {getStatusCount('sending')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            {filteredCampaignData.sending.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Published Column */}
+                      {selectedStatuses.includes('published') && (
+                        <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
+                          <div className="flex items-center justify-between px-[4px] mb-[16px]">
+                            <BadgeOfStatus badge="Published" />
+                            <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                              <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                {getStatusCount('published')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            {filteredCampaignData.published.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Suspended Column */}
+                      {selectedStatuses.includes('suspended') && (
+                        <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
+                          <div className="flex items-center justify-between px-[4px] mb-[16px]">
+                            <BadgeOfStatus badge="Suspended" />
+                            <div className="bg-white border border-[#e1e4ea] rounded-full px-[12px] py-[6px]">
+                              <span className="text-[14px] font-medium text-[#0f172a] tracking-[-0.14px] leading-[1.2]">
+                                {getStatusCount('suspended')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            {filteredCampaignData.suspended.map((campaign) => (
+                              <CampaignCard key={campaign.id} campaign={campaign} showStatus={false} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              ) : (
+                /* List View - Table */
+                <div className="flex-1 overflow-y-auto">
+                  <div className="w-full">
+                    <div className="bg-white rounded-[12px] overflow-hidden border border-[#e1e4ea]">
+                      {/* Table Header */}
+                      <div className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 bg-[#f8f8f8] border-b border-[#e1e4ea] font-medium text-[12px] text-[#64748b] uppercase tracking-wider min-w-[900px]">
+                        <div></div>
+                        <div>Campaign</div>
+                        <div>Category</div>
+                        <div>Status</div>
+                        <div>Last Edited</div>
+                        <div>Subject</div>
+                        <div className="text-center">Actions</div>
+                      </div>
+
+                      {/* Table Body */}
+                      <div className="divide-y divide-[#e1e4ea]">
+                        {Object.entries(filteredCampaignData)
+                          .filter(([status]) => selectedStatuses.includes(status))
+                          .map(([status, campaigns]) =>
+                            campaigns.map((campaign) => (
+                              <div
+                                key={campaign.id}
+                                className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 hover:bg-[#f8f8f8] transition-colors items-center min-w-[900px]"
+                              >
+                                {/* Emoji */}
+                                <div className="text-[20px] flex-shrink-0">{campaign.emoji}</div>
+
+                                {/* Campaign Name */}
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="font-medium text-[14px] text-[#0e121b] truncate">
+                                    {campaign.name}
+                                  </span>
+                                </div>
+
+                                {/* Category */}
+                                <div className="flex items-center">
+                                  <BadgeOfCategory category={campaign.category} />
+                                </div>
+
+                                {/* Status */}
+                                <div className="flex items-center">
+                                  <BadgeOfStatus badge={statusDisplayNames[status] || status} />
+                                </div>
+
+                                {/* Last Edited */}
+                                <div className="text-[12px] text-[#64748b]">
+                                  <div className="truncate">{campaign.lastEdited}</div>
+                                </div>
+
+                                {/* Subject */}
+                                <div className="text-[14px] text-[#0e121b] min-w-0">
+                                  <div className="truncate">{campaign.subject}</div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex justify-center items-center">
+                                  <button
+                                    className="w-[32px] h-[32px] flex items-center justify-center hover:bg-[#f2f2f2] rounded-lg transition-colors"
+                                    aria-label="More options"
+                                  >
+                                    <MoreVertical className="w-[18px] h-[18px] text-[#64748b]" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </>
       )}
     </div>
   );
