@@ -1,0 +1,10 @@
+export { default as HomeIcon } from './HomeIcon';
+export { default as AnnouncementIcon } from './AnnouncementIcon';
+export { default as DatabaseIcon } from './DatabaseIcon';
+export { default as InboxIcon } from './InboxIcon';
+export { default as BarChartIcon } from './BarChartIcon';
+export { default as LayersIcon } from './LayersIcon';
+export { default as UserSquareIcon } from './UserSquareIcon';
+export { default as PuzzleIcon } from './PuzzleIcon';
+export { default as SettingsIcon } from './SettingsIcon';
+export { default as MessageChatIcon } from './MessageChatIcon';

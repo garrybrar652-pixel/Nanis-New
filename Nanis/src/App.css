@@ -1,0 +1,27 @@
+/**
+ * App.css - Additional custom styles
+ * 
+ * Main animations are defined in index.css
+ * Available animation classes:
+ * 
+ * Selection & Transitions:
+ * - animate-selection: Smooth all-properties transition (300ms)
+ * - animate-selection-fast: Faster transition (200ms)
+ * - animate-bg: Background color transitions only
+ * - animate-shadow: Box shadow transitions only
+ * - animate-transform: Transform transitions only
+ * - animate-scale: Scale with active press effect
+ * 
+ * Hover Effects:
+ * - hover-lift: Translates element up 2px on hover
+ * - hover-scale: Scales element to 1.02 on hover
+ * 
+ * Page Animations:
+ * - animate-fade-in: Fade in from bottom with opacity
+ * - animate-slide-in: Slide in from left with opacity
+ * - animate-stagger-1 to animate-stagger-4: Staggered animation delays
+ * 
+ * Selection Indicators:
+ * - selection-indicator: Adds animated left border
+ * - selection-indicator.active: Shows the border animation
+ */
