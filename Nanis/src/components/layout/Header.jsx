@@ -1,7 +1,7 @@
 // Dashboard Header with search, notifications, and action button
 import { useNavigate } from 'react-router-dom';
 import ASSETS from '../../constants/assets';
-import PrimaryButton from '../common/PrimaryButton';
+import PrimaryButton from '../common/Button';
 
 const Header = ({ title = 'Dashboard', onMenuClick }) => {
   const navigate = useNavigate();

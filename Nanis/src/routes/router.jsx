@@ -15,6 +15,7 @@ import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicRoute from '../components/auth/PublicRoute';
+import EmailCampaignWizard from '../pages/Campaigns/EmailCampaignWizard';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: 'campaigns/create',
         element: <CreateCampaign />
+      },
+      {
+        path: 'campaigns/create/email',
+        element: <EmailCampaignWizard />
       },
       {
         path: 'automation',

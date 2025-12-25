@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import PrimaryButton from '../../components/common/PrimaryButton';
+import { PrimaryButton, SecondaryButton , TertiaryButton } from '../../components/common/Button';
 
 // Campaign category card component with interactive states
 const CampaignCategoryCard = ({
@@ -185,14 +185,14 @@ const CreateCampaign = () => {
 
           {/* Action Buttons */}
           <div className="flex items-start justify-between w-full max-w-[1056px]">
-            <button
+            <SecondaryButton
               onClick={handleCancel}
               className="border border-[#e1e4ea] flex items-center justify-center px-[16px] py-[8px] rounded-[10px] hover:bg-gray-50 transition-colors"
             >
               <span className="font-['Inter_Display',sans-serif] font-medium text-[#0f172a] text-[14px] tracking-[-0.14px] leading-[20px]">
                 Cancel
               </span>
-            </button>
+            </SecondaryButton>
 
             <PrimaryButton
               onClick={handleNext}

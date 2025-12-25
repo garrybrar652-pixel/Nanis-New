@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Grid, List, Filter, ChevronDown, MoreVertical, Loader2, AlertCircle } from 'lucide-react';
+import { Grid, List, Filter, ChevronDown, MoreVertical, AlertCircle } from 'lucide-react';
 import BadgeOfCategory from '../../components/campaigns/BadgeOfCategory';
 import BadgeOfStatus from '../../components/campaigns/BadgeOfStatus';
 import CampaignsEmptyState from '../../components/campaigns/CampaignsEmptyState';
@@ -220,10 +220,36 @@ const Campaigns = () => {
   // Loading State
   if (isLoading) {
     return (
-      <div className="bg-white rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)] p-[12px] sm:p-[20px] flex items-center justify-center h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-12 h-12 text-[#335cff] animate-spin" />
-          <p className="text-[#64748b] text-[14px]">Loading campaigns...</p>
+      <div className="bg-white rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)] p-[12px] sm:p-[20px] flex flex-col gap-[12px] sm:gap-[20px] w-full h-full overflow-hidden min-h-0" aria-busy="true">
+        {/* Skeleton Header (tabs/controls placeholder) */}
+        <div className="flex gap-[8px] items-center w-full overflow-x-auto scrollbar-hide">
+          <div className="h-[36px] w-[120px] rounded-[8px] bg-[#f2f2f2]" />
+          <div className="h-[36px] w-[120px] rounded-[8px] bg-[#f2f2f2]" />
+          <div className="h-[36px] w-[120px] rounded-[8px] bg-[#f2f2f2] hidden sm:block" />
+          <div className="h-[36px] w-[120px] rounded-[8px] bg-[#f2f2f2] hidden lg:block" />
+        </div>
+
+        {/* Skeleton Grid */}
+        <div className="flex-1 overflow-auto min-h-0 mt-[8px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[12px] sm:gap-[16px] animate-pulse">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-[12px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16)] p-[12px] flex flex-col gap-[12px] h-[220px]">
+                <div className="flex items-center justify-between">
+                  <div className="h-[20px] w-[36px] rounded bg-[#f2f2f2]" />
+                  <div className="h-[20px] w-[36px] rounded bg-[#f2f2f2]" />
+                </div>
+                <div className="flex items-center gap-[8px]">
+                  <div className="h-[28px] w-[28px] rounded bg-[#f2f2f2]" />
+                  <div className="h-[18px] w-3/4 rounded bg-[#f2f2f2]" />
+                </div>
+                <div className="bg-[#f5f5f5] rounded-[8px] p-[12px] flex-1">
+                  <div className="h-[14px] bg-[#f2f2f2] rounded w-full mb-2" />
+                  <div className="h-[14px] bg-[#f2f2f2] rounded w-5/6" />
+                </div>
+                <div className="h-[14px] bg-[#f2f2f2] rounded w-1/2" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -232,7 +258,7 @@ const Campaigns = () => {
   // Error State
   if (isError) {
     return (
-      <div className="bg-white rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)] p-[12px] sm:p-[20px] flex items-center justify-center h-[400px]">
+      <div className="bg-white rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)] p-[12px] sm:p-[20px] flex items-center justify-center w-full h-full min-h-0">
         <div className="flex flex-col items-center gap-4 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-red-500" />
           <div>
