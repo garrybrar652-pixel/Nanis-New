@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 import { PrimaryButton, SecondaryButton } from '../../components/common/Button';
-import Input from '../../components/common/Input';
+import TextInput from '../../components/common/TextInput';
 
 /**
  * EmailCampaignWizard - Step 1: Enter campaign name
  * Matches Figma design exactly with proper alignment and spacing
+ * Fully responsive design
  */
 const EmailCampaignWizard = () => {
   const navigate = useNavigate();
@@ -37,8 +37,8 @@ const EmailCampaignWizard = () => {
   };
 
   return (
-    <div className="bg-[#ededed] flex flex-col w-full">
-      {/* Breadcrumbs Header - Fixed at top */}
+    <div className="bg-[#ededed] flex flex-col w-full min-h-screen">
+      {/* Breadcrumbs Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between p-[20px] gap-4 sm:gap-0 flex-shrink-0">
         <div className="flex flex-col gap-[8px] w-full sm:w-auto">
           <p className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[1.2]">
@@ -60,64 +60,83 @@ const EmailCampaignWizard = () => {
         </button>
       </div>
 
-      {/* Content Area - Natural Height */}
-      <div className="px-[12px] sm:px-[20px] pb-[20px]">
-        {/* Compact White Card - Left Aligned */}
-        <div className="w-full max-w-[640px]">
-          <div className="bg-white flex flex-col gap-[20px] w-full px-[20px] sm:px-[40px] py-[28px] sm:py-[36px] rounded-[16px] sm:rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)]">
-            
-            {/* Header Section with Back Button */}
-            <div className="flex flex-col gap-[8px] w-full">
-              <div className="flex items-center gap-[6px] w-full -ml-2">
-                <button 
-                  onClick={handleBack}
-                  className="flex items-center justify-center text-[#335cff] hover:bg-[#f8fafc] rounded-lg p-1 transition-colors flex-shrink-0"
-                  aria-label="Go back"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <h2 className="font-['Inter_Display',sans-serif] font-medium text-[#0f172a] text-[16px] sm:text-[18px] tracking-[-0.18px] leading-[1.2]">
-                  Create an email campaign
-                </h2>
+      {/* Content Area */}
+      <div className="px-[12px] sm:px-[20px] pb-[20px] flex-grow flex">
+        {/* White Card Container - Centered with responsive padding */}
+        <div className="bg-white rounded-[20px] shadow-[0px_1px_2px_1px_rgba(84,87,96,0.14),0px_1px_2px_0px_rgba(84,87,96,0.16),0px_0px_0px_1.5px_rgba(84,87,96,0.02)] w-full flex-grow">
+          {/* Responsive padding: full width on mobile, centered with side padding on desktop */}
+          <div className="px-[20px] sm:px-[40px] md:px-[80px] lg:px-[160px] xl:px-[240px] 2xl:px-[444px] py-[40px] flex flex-col gap-[24px] items-center">
+            {/* Content Container - Max width for readability */}
+            <div className="w-full max-w-[536px] flex flex-col gap-[24px]">
+              
+              {/* Header Section with Back Button */}
+              <div className="flex flex-col gap-[12px]">
+                <div className="flex items-center gap-[8px]">
+                  <button 
+                    onClick={handleBack}
+                    className="flex items-center justify-center text-[#335cff] hover:bg-[#f8fafc] rounded-lg transition-colors flex-shrink-0 -ml-1"
+                    aria-label="Go back"
+                  >
+                    {/* Back Arrow Icon */}
+                    <svg 
+                      className="w-[20px] h-[20px]" 
+                      viewBox="0 0 20 20" 
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        d="M15.8333 10H4.16667M4.16667 10L10 15.8333M4.16667 10L10 4.16667" 
+                        stroke="#335cff" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <h2 className="font-['Inter_Display',sans-serif] font-medium text-[#0f172a] text-[18px] sm:text-[20px] tracking-[-0.2px] leading-[1.2]">
+                    Create an email campaign
+                  </h2>
+                </div>
+                <p className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px]">
+                  Keep subscribers engaged by sharing your latest news, promoting your bestselling products, or announcing an upcoming event.
+                </p>
               </div>
-              <p className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[13px] leading-[1.5] w-full">
-                Keep subscribers engaged by sharing your latest news, promoting your bestselling products, or announcing an upcoming event.
-              </p>
-            </div>
 
-            {/* Campaign Name Input */}
-            <div className="w-full">
-              <Input
-                label="Campaign name"
-                placeholder="Your campaign name"
-                value={campaignName}
-                onChange={(value) => {
-                  setCampaignName(value);
-                  if (error) setError('');
-                }}
-                maxLength={128}
-                required
-                error={error}
-              />
-            </div>
+              {/* Campaign Name Input */}
+              <div className="w-full">
+                <TextInput
+                  label="Campaign name"
+                  placeholder="Your campaign name"
+                  value={campaignName}
+                  onChange={(e) => {
+                    setCampaignName(e.target.value);
+                    if (error) setError('');
+                  }}
+                  maxLength={128}
+                  error={!!error}
+                  errorMessage={error}
+                  id="campaign-name-input"
+                />
+              </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between pt-[12px] w-full gap-3">
-              <SecondaryButton 
-                onClick={handleCancel}
-                size="md"
-                className="w-full sm:w-auto"
-              >
-                Cancel
-              </SecondaryButton>
-              <PrimaryButton 
-                onClick={handleContinue}
-                disabled={!campaignName.trim()}
-                size="md"
-                className="w-full sm:w-auto"
-              >
-                Continue
-              </PrimaryButton>
+              {/* Action Buttons */}
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between pt-[20px] w-full gap-3">
+                <SecondaryButton 
+                  onClick={handleCancel}
+                  size="md"
+                  className="w-full sm:w-auto px-[16px]"
+                >
+                  Cancel
+                </SecondaryButton>
+                <PrimaryButton 
+                  onClick={handleContinue}
+                  disabled={!campaignName.trim()}
+                  size="md"
+                  className="w-full sm:w-auto px-[16px]"
+                >
+                  Continue
+                </PrimaryButton>
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,56 @@
+/* TextInput Component Styles */
+
+/* Blinking cursor animation for typing state */
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Additional responsive styles for TextInput */
+@media (max-width: 640px) {
+  /* Adjust font size slightly on very small screens if needed */
+  .text-input-responsive {
+    font-size: 13px;
+  }
+}
+
+/* Focus ring for accessibility - Only visible with keyboard navigation */
+input:focus-visible {
+  outline: 2px solid #335cff;
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+input:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Smooth transitions for all input states */
+input {
+  transition: border-color 0.2s ease-in-out, 
+              box-shadow 0.2s ease-in-out,
+              background-color 0.2s ease-in-out;
+}
+
+/* Input autofill styling to match design */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+  -webkit-text-fill-color: #0f172a;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Selection color to match brand */
+input::selection {
+  background-color: rgba(51, 92, 255, 0.2);
+  color: #0f172a;
+}

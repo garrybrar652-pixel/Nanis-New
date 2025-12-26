@@ -14,10 +14,7 @@ Route::get('/clear-cache', function () {
 
 
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect('/dashboard');
-    }
-    return view('welcome');
+    return redirect('/admin');
 });
 
 // User dashboard (protected)

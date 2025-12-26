@@ -207,3 +207,18 @@ body {
 .selection-indicator.active::before {
   transform: scaleY(1);
 }
+
+
+/* Add to your existing animations section */
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
