@@ -35,7 +35,7 @@ const CreateCampaignContent = () => {
   // Handle start creating (after category selection)
   const handleStartCreate = () => {
     if (selectedCategory === 'email') {
-      goToStep(1); // Go to EmailSubjectStep
+      goToStep(1); // Go to StartToCreateStep
     } else {
       toast.error('This campaign type is not yet implemented');
     }

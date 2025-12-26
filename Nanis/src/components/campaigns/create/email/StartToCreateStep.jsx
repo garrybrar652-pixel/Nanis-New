@@ -3,7 +3,7 @@ import StepHeader from '../../wizard/StepHeader';
 import { useCampaign } from '../../../../contexts/CampaignContext';
 
 /**
- * EmailSubjectStep - Step 1: Campaign name entry
+ * StartToCreateStep - Step 1: Campaign name entry
  * Simplified step matching the cleaner design with only campaign name field
  * 
  * Fields:
