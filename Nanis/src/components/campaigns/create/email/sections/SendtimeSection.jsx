@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Calendar, Clock } from 'lucide-react';
-import { SecondaryButton, PrimaryButton } from '../../../components/common/Button';
-import StatusIndicator from '../components/StatusIndicator';
+import { SecondaryButton, PrimaryButton } from '../../../../common/Button';
+import StatusIndicator from '../../../../common/StatusIndicator';
 
 /**
  * SendTimeSection Component
@@ -55,7 +55,7 @@ const SendTimeSection = ({
   if (!isExpanded) {
     return (
       <div 
-        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[20px] py-[16px] flex items-center gap-[14px] w-full cursor-pointer hover:border-[#64748b] transition-colors"
+        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[20px] py-[16px] flex items-center gap-[14px] w-full cursor-pointer"
         onClick={onExpand}
       >
         <StatusIndicator isCompleted={isCompleted} />
@@ -75,7 +75,7 @@ const SendTimeSection = ({
         </div>
 
         <button 
-          className="bg-white border border-[#e1e4ea] rounded-[10px] px-[16px] py-[8px] hover:bg-gray-50 transition-colors"
+          className="bg-white border border-[#e1e4ea] rounded-[10px] px-[16px] py-[8px] hover:bg-[#ebefff] hover:border-[#335cff] transition-all"
           onClick={(e) => {
             e.stopPropagation();
             onExpand();

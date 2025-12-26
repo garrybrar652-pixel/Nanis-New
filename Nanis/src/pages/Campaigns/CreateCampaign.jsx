@@ -5,6 +5,7 @@ import WizardLayout from '../../components/campaigns/wizard/WizardLayout';
 import StepNavigation from '../../components/campaigns/wizard/StepNavigation';
 import CategorySelectionStep from '../../components/campaigns/create/CategorySelectionStep';
 import StartToCreateStep from '../../components/campaigns/create/email/StartToCreateStep';
+import EmailCampaignDetail from '../../components/campaigns/create/email/EmailCampaignDetail';
 import toast from 'react-hot-toast';
 
 /**
@@ -54,11 +55,14 @@ const CreateCampaignContent = () => {
     if (currentStep === 0) {
       handleStartCreate();
     } else if (currentStep === 1) {
-      // Last step - can add submission logic here
+      // Go to step 2 - EmailCampaignDetail
       if (validateStep(currentStep)) {
-        toast.success('Campaign name saved!');
-        navigate('/campaigns');
+        goToStep(2);
       }
+    } else if (currentStep === 2) {
+      // Final step - save and navigate
+      toast.success('Campaign setup complete!');
+      navigate('/campaigns');
     }
   };
 
@@ -104,6 +108,9 @@ const CreateCampaignContent = () => {
       case 1:
         return <StartToCreateStep onBack={handleBack} />;
       
+      case 2:
+        return <EmailCampaignDetail onBack={handleBack} />;
+      
       default:
         return null;
     }
@@ -128,7 +135,7 @@ const CreateCampaignContent = () => {
       };
     }
 
-    // For email campaign step 1
+    // For email campaign steps 1-2
     return {
       leftButton: {
         label: 'Back',
@@ -136,7 +143,7 @@ const CreateCampaignContent = () => {
         show: true,
       },
       rightButton: {
-        label: 'Continue',
+        label: currentStep === 2 ? 'Save & Continue' : 'Continue',
         onClick: handleNext,
         disabled: !canProceed(),
         show: true,
@@ -147,7 +154,8 @@ const CreateCampaignContent = () => {
   return (
     <WizardLayout>
       {renderStep()}
-      <StepNavigation {...getNavigationConfig()} />
+      {/* Only show StepNavigation for steps 0 and 1, not for step 2 */}
+      {currentStep !== 2 && <StepNavigation {...getNavigationConfig()} />}
     </WizardLayout>
   );
 };
