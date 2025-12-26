@@ -1,17 +1,45 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
-const EmailCampaignContext = createContext(null);
+const CampaignContext = createContext(null);
 
-export const useEmailCampaign = () => {
-  const context = useContext(EmailCampaignContext);
+const STORAGE_KEY = 'campaign_draft';
+
+export const useCampaign = () => {
+  const context = useContext(CampaignContext);
   if (!context) {
-    throw new Error('useEmailCampaign must be used within EmailCampaignProvider');
+    throw new Error('useCampaign must be used within CampaignProvider');
   }
   return context;
 };
 
-export const EmailCampaignProvider = ({ children }) => {
-  const [formData, setFormData] = useState({
+// Load saved draft from localStorage
+const loadDraft = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Check if draft is less than 7 days old
+      const draftAge = Date.now() - new Date(parsed.timestamp).getTime();
+      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      
+      if (draftAge < maxAge) {
+        return parsed;
+      } else {
+        // Draft too old, clear it
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load draft:', error);
+  }
+  return null;
+};
+
+export const CampaignProvider = ({ children }) => {
+  // Load initial state from localStorage or use defaults
+  const savedDraft = loadDraft();
+  
+  const [formData, setFormData] = useState(savedDraft?.formData || {
     details: {
       name: '',
       subject: '',
@@ -51,9 +79,38 @@ export const EmailCampaignProvider = ({ children }) => {
     }
   });
 
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 0);
+  const [selectedCategory, setSelectedCategory] = useState(savedDraft?.selectedCategory || null);
   const [errors, setErrors] = useState({});
   const [isDraft, setIsDraft] = useState(true);
+
+  // Save draft to localStorage whenever important state changes
+  useEffect(() => {
+    // Only save if user has started (selected category or is past step 0)
+    if (selectedCategory || currentStep > 0) {
+      const draftData = {
+        formData,
+        currentStep,
+        selectedCategory,
+        timestamp: new Date().toISOString(),
+      };
+      
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+      } catch (error) {
+        console.error('Failed to save draft:', error);
+      }
+    }
+  }, [formData, currentStep, selectedCategory]);
+
+  // Clear draft from localStorage
+  const clearDraft = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error('Failed to clear draft:', error);
+    }
+  }, []);
 
   // Update specific section of form data
   const updateSection = useCallback((section, data) => {
@@ -109,25 +166,56 @@ export const EmailCampaignProvider = ({ children }) => {
         utmParameters: {}
       }
     });
-    setCurrentStep(1);
+    setCurrentStep(0);
+    setSelectedCategory(null);
     setErrors({});
     setIsDraft(true);
   }, []);
 
-  // Validation functions
+  // Check if step is valid (non-mutating - doesn't set state)
+  const isStepValid = useCallback((step) => {
+    switch (step) {
+      case 1: // Details - Only campaign name required
+        if (!formData.details.name || formData.details.name.trim() === '') return false;
+        return true;
+
+      case 2: // Content
+        return !!(formData.content.html || formData.content.text);
+
+      case 3: // Recipients
+        const totalRecipients = 
+          formData.recipients.lists.length + 
+          formData.recipients.segments.length + 
+          formData.recipients.individuals.length;
+        return totalRecipients > 0;
+
+      case 4: // Sender
+        if (!formData.settings.fromName || formData.settings.fromName.trim() === '') return false;
+        if (!formData.settings.fromEmail || formData.settings.fromEmail.trim() === '') return false;
+        return true;
+
+      case 5: // Schedule
+        if (formData.schedule.sendType === 'scheduled') {
+          if (!formData.schedule.scheduledAt) return false;
+          const scheduledDate = new Date(formData.schedule.scheduledAt);
+          const now = new Date();
+          if (scheduledDate <= now) return false;
+        }
+        return true;
+
+      default:
+        return true;
+    }
+  }, [formData]);
+
+  // Validation functions (sets errors state)
   const validateStep = useCallback((step) => {
     const newErrors = {};
 
     switch (step) {
-      case 1: // Details
+      case 1: // Details - Only campaign name required
         if (!formData.details.name || formData.details.name.trim() === '') {
           newErrors.name = 'Campaign name is required';
-        }
-        if (!formData.details.subject || formData.details.subject.trim() === '') {
-          newErrors.subject = 'Email subject is required';
-        }
-        if (formData.details.subject && formData.details.subject.length > 150) {
-          newErrors.subject = 'Subject line should be less than 150 characters';
         }
         break;
 
@@ -148,7 +236,16 @@ export const EmailCampaignProvider = ({ children }) => {
         }
         break;
 
-      case 4: // Schedule
+      case 4: // Sender
+        if (!formData.settings.fromName || formData.settings.fromName.trim() === '') {
+          newErrors.fromName = 'From name is required';
+        }
+        if (!formData.settings.fromEmail || formData.settings.fromEmail.trim() === '') {
+          newErrors.fromEmail = 'From email is required';
+        }
+        break;
+
+      case 5: // Schedule
         if (formData.schedule.sendType === 'scheduled' && !formData.schedule.scheduledAt) {
           newErrors.schedule = 'Please select a date and time';
         }
@@ -192,6 +289,7 @@ export const EmailCampaignProvider = ({ children }) => {
     // State
     formData,
     currentStep,
+    selectedCategory,
     errors,
     isDraft,
 
@@ -200,8 +298,11 @@ export const EmailCampaignProvider = ({ children }) => {
     updateFormData,
     resetForm,
     validateStep,
+    isStepValid,
     setErrors,
     setIsDraft,
+    setSelectedCategory,
+    clearDraft,
 
     // Navigation
     goToStep,
@@ -210,10 +311,10 @@ export const EmailCampaignProvider = ({ children }) => {
   };
 
   return (
-    <EmailCampaignContext.Provider value={value}>
+    <CampaignContext.Provider value={value}>
       {children}
-    </EmailCampaignContext.Provider>
+    </CampaignContext.Provider>
   );
 };
 
-export default EmailCampaignContext;
+export default CampaignContext;

@@ -1,31 +1,38 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEmailCampaign } from '../contexts/EmailCampaignContext';
+import { useCampaign } from '../contexts/CampaignContext';
 import { useCreateCampaign } from './useCampaigns';
 import toast from 'react-hot-toast';
 
 /**
- * Custom hook for managing wizard navigation and actions
+ * Custom hook for managing campaign wizard navigation and actions
+ * Supports multiple campaign types (email, SMS, website, etc.)
  */
-export const useWizardNavigation = () => {
+export const useCampaignWizard = () => {
   const navigate = useNavigate();
   const {
     formData,
     currentStep,
+    selectedCategory,
     errors,
     goToStep,
     nextStep,
     previousStep,
     validateStep,
     resetForm,
-  } = useEmailCampaign();
+  } = useCampaign();
 
   const createCampaignMutation = useCreateCampaign();
 
   // Check if current step is valid
   const canProceed = useCallback(() => {
+    // Step 0 (category selection) - only needs category selected
+    if (currentStep === 0) {
+      return selectedCategory !== null;
+    }
+    // Other steps - validate based on category
     return validateStep(currentStep);
-  }, [currentStep, validateStep]);
+  }, [currentStep, selectedCategory, validateStep]);
 
   // Handle next button click
   const handleNext = useCallback(() => {
@@ -190,10 +197,11 @@ export const useWizardNavigation = () => {
   return {
     // State
     currentStep,
-    totalSteps: 5,
+    selectedCategory,
+    totalSteps: selectedCategory === 'email' ? 5 : 0, // Email has 5 steps (1-5)
     errors,
-    isFirstStep: currentStep === 1,
-    isLastStep: currentStep === 5,
+    isFirstStep: currentStep === 0,
+    isLastStep: currentStep === 5 && selectedCategory === 'email',
     canProceed: canProceed(),
 
     // Navigation
