@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const Input = ({
   label = "Text input",
@@ -9,6 +9,7 @@ const Input = ({
   variant
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef(null);
 
   const currentVariant = variant || (isFocused ? 'typing' : value ? 'filled' : 'default');
 
@@ -17,14 +18,14 @@ const Input = ({
   };
 
   const renderInput = () => {
-    const baseClasses = "bg-white border border-solid content-stretch flex items-center justify-between not-italic overflow-clip px-[12px] py-[10px] relative rounded-[10px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] shrink-0 text-[14px] tracking-[-0.084px] w-full";
-    const borderColor = currentVariant === 'typing' ? 'border-[#335cff]' : 'border-[#e1e4ea]';
+    const baseClasses = "bg-white content-stretch flex items-center justify-between not-italic overflow-clip px-[12px] py-[10px] relative rounded-[10px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] shrink-0 text-[14px] tracking-[-0.084px] w-full";
     
     // Default state (placeholder visible)
     if (currentVariant === 'default') {
       return (
-        <div className={`${baseClasses} ${borderColor} gap-[8px]`}>
+        <div className={`${baseClasses} gap-[8px] cursor-text`} onClick={() => inputRef.current?.focus()}>
           <input
+            ref={inputRef}
             type="text"
             value={value}
             onChange={handleChange}
@@ -32,7 +33,7 @@ const Input = ({
             onBlur={() => setIsFocused(false)}
             placeholder={placeholder}
             maxLength={maxLength}
-            className="font-['Inter_Display:Regular',sans-serif] leading-[20px] relative shrink-0 text-[#8b95a5] basis-0 grow min-h-px min-w-px outline-none placeholder:text-[#8b95a5]"
+            className="font-['Inter_Display:Regular',sans-serif] leading-[20px] relative shrink-0 text-[#8b95a5] basis-0 grow min-h-px min-w-px outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:shadow-none placeholder:text-[#8b95a5]" style={{ WebkitAppearance: 'none' }}
           />
           <span className="font-['Inter_Display:Regular',sans-serif] leading-[20px] relative shrink-0 text-[#64748b] text-nowrap">
             {value.length}/{maxLength}
@@ -44,20 +45,18 @@ const Input = ({
     // Typing state (focused with cursor)
     if (currentVariant === 'typing') {
       return (
-        <div className={`${baseClasses} ${borderColor}`}>
-          <div className="content-stretch flex font-['Inter_Display:Medium',sans-serif] gap-[2px] items-center leading-[20px] relative shrink-0">
-            <input
-              type="text"
-              value={value}
-              onChange={handleChange}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              maxLength={maxLength}
-              className="relative shrink-0 text-[#0f172a] outline-none bg-transparent w-auto"
-              style={{ width: value ? `${value.length * 8.5}px` : '8px' }}
-            />
-            <span className="relative shrink-0 text-[#335cff]">|</span>
-          </div>
+        <div className={`${baseClasses} cursor-text`} onClick={() => inputRef.current?.focus()}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={handleChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            maxLength={maxLength}
+            placeholder={placeholder}
+            className="font-['Inter_Display:Medium',sans-serif] leading-[20px] relative shrink-0 text-[#0f172a] flex-1 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:shadow-none" style={{ WebkitAppearance: 'none' }}
+          />
           <span className="font-['Inter_Display:Regular',sans-serif] leading-[20px] relative shrink-0 text-[#64748b]">
             <span className="text-[#0f172a]">{value.length}</span>/{maxLength}
           </span>
@@ -67,15 +66,17 @@ const Input = ({
     
     // Filled state (has value but not focused)
     return (
-      <div className={`${baseClasses} ${borderColor}`}>
+      <div className={`${baseClasses} cursor-text`} onClick={() => inputRef.current?.focus()}>
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           maxLength={maxLength}
-          className="font-['Inter_Display:Medium',sans-serif] leading-[20px] relative shrink-0 text-[#0f172a] flex-1 outline-none"
+          placeholder={placeholder}
+          className="font-['Inter_Display:Medium',sans-serif] leading-[20px] relative shrink-0 text-[#0f172a] flex-1 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:shadow-none" style={{ WebkitAppearance: 'none' }}
         />
         <span className="font-['Inter_Display:Regular',sans-serif] leading-[20px] relative shrink-0 text-[#64748b]">
           <span className="text-[#0f172a]">{value.length}</span>/{maxLength}

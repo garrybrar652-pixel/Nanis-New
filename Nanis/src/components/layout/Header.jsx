@@ -76,6 +76,7 @@ const Header = ({ title = 'Dashboard', onMenuClick }) => {
 
         {/* New Campaign Button */}
         <PrimaryButton
+          onClick={() => navigate('/campaigns/create')}
           icon={<img alt="Plus" className="block w-full h-full object-contain" src={ASSETS.ICON_PLUS} />}
           className="lg:w-[164px] md:w-auto pl-[8px] pr-[12px]"
         >

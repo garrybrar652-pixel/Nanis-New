@@ -100,7 +100,8 @@ const CreateCampaign = () => {
     if (selectedCategory) {
       // Navigate to the appropriate campaign wizard based on selected category
       if (selectedCategory === 'email') {
-        navigate('/campaigns/create/email');
+        // navigate('/campaigns/create/email');
+        console.log('Navigate to Email Campaign Wizard');
       } else {
         // For other campaign types, you can add their routes here
         console.log('Selected category:', selectedCategory);
