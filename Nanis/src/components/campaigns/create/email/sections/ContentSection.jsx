@@ -115,7 +115,7 @@ const ContentSection = ({
   // Expanded State
   return (
     <div className="bg-[#f8fafc] border-[1.3px] border-[#335cff] rounded-[12px] px-[20px] py-[16px] flex gap-[14px] w-full">
-      <div className="flex items-start justify-center pt-[5px]">
+      <div className="flex items-start justify-center self-stretch shrink-0">
         <StatusIndicator isCompleted={isCompleted} />
       </div>
 

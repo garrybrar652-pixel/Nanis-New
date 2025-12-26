@@ -48,6 +48,11 @@ const SenderSection = ({
     onCancel();
   };
 
+  const handleAddSender = () => {
+    // Logic to add a new sender email address
+    alert('Add new sender functionality to be implemented.');
+  }
+
   // Collapsed State
   if (!isExpanded) {
     return (
@@ -158,7 +163,7 @@ const SenderSection = ({
                   
                   {/* Add new sender button */}
                   <div className="px-[12px] pt-[8px] pb-[4px]">
-                    <button className="w-full border border-[#e1e4ea] rounded-[10px] px-[16px] py-[8px] flex items-center justify-center gap-[4px] hover:bg-[#f8fafc] transition-colors">
+                    <button onClick={handleAddSender} className="w-full border border-[#e1e4ea] rounded-[10px] px-[16px] py-[8px] flex items-center justify-center gap-[4px] hover:bg-[#f8fafc] transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path d="M9 3.75V14.25M3.75 9H14.25" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -174,17 +179,19 @@ const SenderSection = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-[12px] sm:gap-[16px]">
-          <SecondaryButton onClick={handleCancel} size="md" className="w-full sm:w-auto">
+          <button  onClick={handleCancel} size="md" className="px-[16px] py-[8px] rounded-[10px] font-['Inter_Display',sans-serif] font-medium text-[#335cff] text-[14px] leading-[20px] tracking-[-0.14px] hover:bg-[#f8fafc] transition-colors">
             Cancel
-          </SecondaryButton>
-          <PrimaryButton 
-            onClick={handleSave} 
-            disabled={!selectedEmail}
-            size="md"
-            className="w-full sm:w-auto"
+          </button>
+          <button  
+            onClick={handleSave}
+            className={`px-[16px] py-[8px] rounded-[10px] 
+              font-['Inter_Display',sans-serif] font-semibold text-[14px] leading-[20px]
+              ${selectedEmail ? 'bg-[#335cff] text-white hover:bg-[#254eda]' : 'bg-[#b3c1ff] text-white cursor-not-allowed'}
+              transition-colors
+            `}
           >
             Save
-          </PrimaryButton>
+          </button>
         </div>
       </div>
     </div>

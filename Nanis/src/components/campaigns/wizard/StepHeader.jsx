@@ -1,4 +1,5 @@
 import React from 'react';
+import { PrimaryButton } from '../../common/Button';
 
 /**
  * StepHeader - Flexible header component for campaign creation steps
@@ -70,15 +71,9 @@ const StepHeader = ({
         </div>
         
         {/* Right side: Send button */}
-        <button 
-          className="bg-gradient-to-b from-[#335cff] to-[#2a52f1] border border-white flex items-center justify-center px-[24px] py-[8px] rounded-[10px] shadow-[0px_2px_2px_0px_rgba(52,55,72,0.2),0px_0px_0px_1px_#335cff,0px_0px_0px_1px_rgba(134,140,152,0.2)] hover:from-[#2a52f1] hover:to-[#2347d8] transition-all relative overflow-hidden"
-          aria-label="Send campaign"
-        >
-          <span className="font-['Inter_Display',sans-serif] font-semibold text-white text-[14px] leading-[20px] tracking-[-0.14px] relative z-10">
-            Send
-          </span>
-          <div className="absolute inset-0 pointer-events-none shadow-[inset_2px_4px_3px_0px_rgba(255,255,255,0.08)]" />
-        </button>
+        <PrimaryButton >
+          Send
+        </PrimaryButton>
       </div>
     );
   }

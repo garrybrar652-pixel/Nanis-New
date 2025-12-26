@@ -55,7 +55,7 @@ const StatusPoint = ({
   // Not yet status - Gray indicator (custom SVG)
   return (
     <div 
-      className={`flex items-center justify-center h-[48px] py-[5px] ${className}`}
+      className={`flex items-start justify-center h-[48px] py-[5px] ${className}`}
       data-name="Status=Not yet"
     >
       <div className="relative w-[14px] h-[14px]">

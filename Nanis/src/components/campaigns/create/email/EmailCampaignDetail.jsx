@@ -33,10 +33,10 @@ const EmailCampaignDetail = ({ onBack }) => {
   // Dynamically check completion status based on actual data
   const isActuallyCompleted = {
     sender: !!(formData.sender?.fromEmail),
-    recipients: !!(formData.recipients?.recipientList?.length > 0),
+    recipients: !!(formData.recipients?.lists?.length > 0),
     subjects: !!(formData.details?.subject),
     content: !!(formData.content?.body),
-    sendTime: !!(formData.schedule?.sendTime),
+    sendTime: !!(formData.schedule?.sendType && (formData.schedule?.sendType === 'now' || formData.schedule?.scheduledAt)),
   };
 
   // Check if all sections are completed
@@ -46,7 +46,10 @@ const EmailCampaignDetail = ({ onBack }) => {
     setCompletionStatus(prev => ({ ...prev, [section]: true }));
     setExpandedSection(null);
     // Update form data in context
-    updateSection(section, data);
+    // For subjects section, data should be saved to 'details' section
+    // For sendTime section, data should be saved to 'schedule' section
+    const targetSection = section === 'subjects' ? 'details' : section === 'sendTime' ? 'schedule' : section;
+    updateSection(targetSection, data);
   };
 
   const handleSectionEdit = (section) => {
