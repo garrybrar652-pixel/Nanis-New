@@ -71,7 +71,7 @@ const StepHeader = ({
         </div>
         
         {/* Right side: Send button */}
-        <PrimaryButton >
+        <PrimaryButton size='lg' >
           Send
         </PrimaryButton>
       </div>
