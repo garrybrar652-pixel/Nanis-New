@@ -1,0 +1,13 @@
+export default {
+  theme: {
+    extend: {
+      colors: {
+        editor: {
+          primary: '#6366F1',
+          secondary: '#EC4899',
+          canvas: '#E5E7EB',
+        },
+      },
+    },
+  },
+};

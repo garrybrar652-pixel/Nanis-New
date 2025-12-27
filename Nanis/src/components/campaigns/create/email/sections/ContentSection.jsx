@@ -80,7 +80,7 @@ const ContentSection = ({
   if (!isExpanded) {
     return (
       <div 
-        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[16px] sm:px-[20px] py-[16px] flex flex-col sm:flex-row items-start sm:items-center gap-[12px] sm:gap-[14px] w-full cursor-pointer hover:border-[#335cff] transition-colors"
+        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[16px] sm:px-[20px] py-[16px] flex flex-col sm:flex-row items-start sm:items-center gap-[12px] sm:gap-[14px] w-full cursor-pointer transition-colors"
         onClick={onExpand}
       >
         <div className="hidden sm:block">

@@ -72,6 +72,9 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
+        // Log incoming data for debugging
+        \Log::info('Creating campaign with data:', $request->all());
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'emoji' => 'nullable|string|max:10',
@@ -80,11 +83,12 @@ class CampaignController extends Controller
             'subject' => 'nullable|string|max:500',
             'preview' => 'nullable|string',
             'content' => 'nullable|string',
-            'scheduled_at' => 'nullable|date|after:now',
+            'scheduled_at' => 'nullable|date',
             'total_recipients' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Validation failed:', ['errors' => $validator->errors()->toArray()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',

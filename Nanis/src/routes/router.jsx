@@ -15,6 +15,7 @@ import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicRoute from '../components/auth/PublicRoute';
+import EmailEditorPage from '../pages/Campaigns/EmailEditorPage'
 
 const router = createBrowserRouter([
   {
@@ -88,6 +89,14 @@ const router = createBrowserRouter([
       {
         path: 'help',
         element: <Help />
+      },
+      {
+        path: '/email-editor',
+        element: <EmailEditorPage />,
+      },
+      {
+        path: '/email-editor/:templateId',
+        element: <EmailEditorPage />,
       }
     ]
   }

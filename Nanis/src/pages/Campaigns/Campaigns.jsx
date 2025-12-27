@@ -75,7 +75,15 @@ const Campaigns = () => {
           status: campaign.status,
           subject: campaign.subject || '',
           preview: campaign.preview || '',
-          lastEdited: formatDate(campaign.updated_at || campaign.created_at)
+          lastEdited: formatDate(campaign.updated_at || campaign.created_at),
+          recipients: campaign.recipients || null,
+          excludedRecipients: campaign.excluded_recipients || 0,
+          analytics: campaign.analytics || {
+            sent: campaign.sent_count || 0,
+            opened: campaign.opened_count || 0,
+            clicked: campaign.clicked_count || 0,
+            responses: campaign.responses_count || 0
+          }
         });
       }
     });
@@ -466,7 +474,7 @@ const Campaigns = () => {
                   <div className="flex-1 overflow-x-auto overflow-y-auto min-h-0">
                     <div className="flex gap-[12px] sm:gap-[16px] items-start pb-[12px] sm:pb-[20px] min-w-min">
                       {/* Draft Column */}
-                      {selectedStatuses.includes('draft') && (
+                      {selectedStatuses.includes('draft') && getStatusCount('draft') > 0 && (
                         <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
                           <div className="flex items-center justify-between px-[4px] mb-[16px]">
                             <BadgeOfStatus badge="Draft" />
@@ -485,7 +493,7 @@ const Campaigns = () => {
                       )}
 
                       {/* Scheduled Column */}
-                      {selectedStatuses.includes('scheduled') && (
+                      {selectedStatuses.includes('scheduled') && getStatusCount('scheduled') > 0 && (
                         <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
                           <div className="flex items-center justify-between px-[4px] mb-[16px]">
                             <BadgeOfStatus badge="Scheduled" />
@@ -504,7 +512,7 @@ const Campaigns = () => {
                       )}
 
                       {/* Sending Column */}
-                      {selectedStatuses.includes('sending') && (
+                      {selectedStatuses.includes('sending') && getStatusCount('sending') > 0 && (
                         <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
                           <div className="flex items-center justify-between px-[4px] mb-[16px]">
                             <BadgeOfStatus badge="Sending" />
@@ -523,7 +531,7 @@ const Campaigns = () => {
                       )}
 
                       {/* Published Column */}
-                      {selectedStatuses.includes('published') && (
+                      {selectedStatuses.includes('published') && getStatusCount('published') > 0 && (
                         <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
                           <div className="flex items-center justify-between px-[4px] mb-[16px]">
                             <BadgeOfStatus badge="Published" />
@@ -542,7 +550,7 @@ const Campaigns = () => {
                       )}
 
                       {/* Suspended Column */}
-                      {selectedStatuses.includes('suspended') && (
+                      {selectedStatuses.includes('suspended') && getStatusCount('suspended') > 0 && (
                         <div className="bg-[#f2f2f2] rounded-[20px] px-[8px] py-[12px] w-[240px] sm:w-[264px] flex-shrink-0 flex flex-col">
                           <div className="flex items-center justify-between px-[4px] mb-[16px]">
                             <BadgeOfStatus badge="Suspended" />
@@ -566,70 +574,291 @@ const Campaigns = () => {
                 /* List View - Table */
                 <div className="flex-1 overflow-y-auto">
                   <div className="w-full">
-                    <div className="bg-white rounded-[12px] overflow-hidden border border-[#e1e4ea]">
+                    <div className="flex flex-col items-start w-full">
                       {/* Table Header */}
-                      <div className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 bg-[#f8f8f8] border-b border-[#e1e4ea] font-medium text-[12px] text-[#64748b] uppercase tracking-wider min-w-[900px]">
-                        <div></div>
-                        <div>Campaign</div>
-                        <div>Category</div>
-                        <div>Status</div>
-                        <div>Last Edited</div>
-                        <div>Subject</div>
-                        <div className="text-center">Actions</div>
+                      <div className="flex items-center w-full">
+                        {/* Name Column */}
+                        <div className="bg-white border-b border-[#e1e4ea] flex gap-[10px] items-start p-[12px] w-[320px]">
+                          <div className="overflow-clip relative shrink-0 w-[20px] h-[20px]">
+                            <div className="absolute bg-[#e1e4ea] left-1/2 rounded-[4px] w-[16px] h-[16px] top-1/2 -translate-x-1/2 -translate-y-1/2" />
+                            <div className="absolute bg-white left-1/2 rounded-[2.6px] shadow-[0px_2px_2px_0px_rgba(27,28,29,0.12)] w-[13px] h-[13px] top-1/2 -translate-x-1/2 -translate-y-1/2" />
+                          </div>
+                          <div className="flex gap-[2px] items-center w-[125px]">
+                            <p className="font-medium leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              Name
+                            </p>
+                            <div className="relative shrink-0 w-[16px] h-[16px]">
+                              <div className="absolute inset-[18.75%_29.17%]">
+                                <svg width="8" height="10" viewBox="0 0 8 10" fill="none">
+                                  <path d="M4 3L1 6H7L4 3Z" fill="#525866"/>
+                                  <path d="M4 7L7 4H1L4 7Z" fill="#525866"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Type Column */}
+                        <div className="bg-white border-b border-[#e1e4ea] flex items-start p-[12px] w-[172px]">
+                          <div className="flex-1 flex gap-[2px] items-center">
+                            <p className=" font-medium leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              Type
+                            </p>
+                            <div className="relative shrink-0 w-[16px] h-[16px]">
+                              <div className="absolute inset-[18.75%_29.17%]">
+                                <svg width="8" height="10" viewBox="0 0 8 10" fill="none">
+                                  <path d="M4 3L1 6H7L4 3Z" fill="#525866"/>
+                                  <path d="M4 7L7 4H1L4 7Z" fill="#525866"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Status Column */}
+                        <div className="bg-white border-b border-[#e1e4ea] flex items-start p-[12px] w-[164px]">
+                          <div className="flex-1 flex gap-[2px] items-center">
+                            <p className=" font-medium leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              Status
+                            </p>
+                            <div className="relative shrink-0 w-[16px] h-[16px]">
+                              <div className="absolute inset-[18.75%_29.17%]">
+                                <svg width="8" height="10" viewBox="0 0 8 10" fill="none">
+                                  <path d="M4 3L1 6H7L4 3Z" fill="#525866"/>
+                                  <path d="M4 7L7 4H1L4 7Z" fill="#525866"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Recipients Column */}
+                        <div className="bg-white border-b border-[#e1e4ea] flex items-start p-[12px] w-[200px]">
+                          <div className="flex-1 flex items-center">
+                            <p className=" font-medium leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              Recipients
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Analytics Column */}
+                        <div className="flex-1 bg-white border-b border-[#e1e4ea] flex items-start p-[12px]">
+                          <div className="flex-1 flex items-center">
+                            <p className=" font-medium leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              Analytics
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Actions Column */}
+                        <div className="bg-white border-b border-[#e1e4ea] flex items-start p-[12px]">
+                          {/* Empty header for actions */}
+                        </div>
                       </div>
 
                       {/* Table Body */}
-                      <div className="divide-y divide-[#e1e4ea]">
-                        {Object.entries(filteredCampaignData)
-                          .filter(([status]) => selectedStatuses.includes(status))
-                          .map(([status, campaigns]) =>
-                            campaigns.map((campaign) => (
-                              <div
-                                key={campaign.id}
-                                className="grid grid-cols-[40px,2fr,1.2fr,1fr,1.2fr,2fr,60px] gap-4 px-6 py-4 hover:bg-[#f8f8f8] transition-colors items-center min-w-[900px]"
-                              >
-                                {/* Emoji */}
-                                <div className="text-[20px] flex-shrink-0">{campaign.emoji}</div>
-
-                                {/* Campaign Name */}
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <span className="font-medium text-[14px] text-[#0e121b] truncate">
-                                    {campaign.name}
-                                  </span>
+                      {Object.entries(filteredCampaignData)
+                        .filter(([status]) => selectedStatuses.includes(status))
+                        .map(([status, campaigns]) =>
+                          campaigns.map((campaign) => (
+                            <div
+                              key={campaign.id}
+                              className="flex items-start overflow-clip rounded-[12px] w-full"
+                            >
+                              {/* Name Cell */}
+                              <div className="bg-white border-b border-[#e1e4ea] flex gap-[12px] items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch w-[320px]">
+                                <div className="overflow-clip relative shrink-0 w-[20px] h-[20px]">
+                                  <div className="absolute bg-[#e1e4ea] left-1/2 rounded-[4px] w-[16px] h-[16px] top-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                  <div className="absolute bg-white left-1/2 rounded-[2.6px] shadow-[0px_2px_2px_0px_rgba(27,28,29,0.12)] w-[13px] h-[13px] top-1/2 -translate-x-1/2 -translate-y-1/2" />
                                 </div>
-
-                                {/* Category */}
-                                <div className="flex items-center">
-                                  <BadgeOfCategory category={campaign.category} />
-                                </div>
-
-                                {/* Status */}
-                                <div className="flex items-center">
-                                  <BadgeOfStatus badge={statusDisplayNames[status] || status} />
-                                </div>
-
-                                {/* Last Edited */}
-                                <div className="text-[12px] text-[#64748b]">
-                                  <div className="truncate">{campaign.lastEdited}</div>
-                                </div>
-
-                                {/* Subject */}
-                                <div className="text-[14px] text-[#0e121b] min-w-0">
-                                  <div className="truncate">{campaign.subject}</div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex justify-center items-center">
-                                  <button
-                                    className="w-[32px] h-[32px] flex items-center justify-center hover:bg-[#f2f2f2] rounded-lg transition-colors"
-                                    aria-label="More options"
-                                  >
-                                    <MoreVertical className="w-[18px] h-[18px] text-[#64748b]" />
-                                  </button>
+                                <div className="flex flex-col gap-[2px] h-full items-start justify-center w-[252px]">
+                                  <p className=" font-medium leading-[20px] text-[14px] text-[#0e121b] tracking-[-0.084px] overflow-ellipsis overflow-hidden w-full">
+                                    {campaign.subject || campaign.name}
+                                  </p>
+                                  <p className=" leading-[16px] text-[12px] text-[#64748b] overflow-ellipsis overflow-hidden w-full">
+                                    Last edited, {campaign.lastEdited}
+                                  </p>
                                 </div>
                               </div>
-                            ))
-                          )}
+
+                              {/* Type Cell */}
+                              <div className="bg-white border-b border-[#e1e4ea] flex gap-[12px] items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch w-[172px]">
+                                <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a]">
+                                  Email campaigns
+                                </p>
+                              </div>
+
+                              {/* Status Cell */}
+                              <div className="bg-white border-b border-[#e1e4ea] flex gap-[12px] items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch w-[164px]">
+                                <BadgeOfStatus badge={statusDisplayNames[status] || status} />
+                              </div>
+
+                              {/* Recipients Cell */}
+                              <div className="bg-white border-b border-[#e1e4ea] flex flex-col items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch w-[200px]">
+                                {campaign.recipients ? (
+                                  <>
+                                    <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a] min-w-full w-min">
+                                      {campaign.recipients}
+                                    </p>
+                                    {campaign.excludedRecipients > 0 && (
+                                      <p className=" leading-[18px] text-[12px] text-[#64748b] min-w-full w-min">
+                                        Exclude: {campaign.excludedRecipients} Recipients
+                                      </p>
+                                    )}
+                                  </>
+                                ) : (
+                                  <p className=" leading-[20px] text-[14px] text-[#94a3b8]">
+                                    -
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Analytics Cell */}
+                              <div className="flex-1 bg-white border-b border-[#e1e4ea] flex gap-[8px] items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch">
+                                {campaign.analytics ? (
+                                  <>
+                                    <div className="flex-1 flex flex-col items-start">
+                                      <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a] w-full">
+                                        {campaign.analytics.sent || 0}
+                                      </p>
+                                      <p className=" leading-[18px] text-[12px] text-[#64748b] w-full">
+                                        Sent
+                                      </p>
+                                    </div>
+                                    <div className="flex-1 flex flex-col items-start">
+                                      <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a] w-full">
+                                        {campaign.analytics.opened || 0}
+                                      </p>
+                                      <p className=" leading-[18px] text-[12px] text-[#64748b] w-full">
+                                        Opened
+                                      </p>
+                                    </div>
+                                    <div className="flex-1 flex flex-col items-start">
+                                      <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a] w-full">
+                                        {campaign.analytics.clicked || 0}
+                                      </p>
+                                      <p className=" leading-[18px] text-[12px] text-[#64748b] w-full">
+                                        Clicked
+                                      </p>
+                                    </div>
+                                    <div className="flex-1 flex flex-col items-start">
+                                      <p className=" font-medium leading-[20px] text-[14px] text-[#0f172a] w-full">
+                                        {campaign.analytics.responses || 0}
+                                      </p>
+                                      <p className=" leading-[18px] text-[12px] text-[#64748b] w-full">
+                                        Responses
+                                      </p>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <p className=" leading-[20px] text-[14px] text-[#94a3b8] w-full">
+                                    -
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Actions Cell */}
+                              <div className="bg-white border-b border-[#e1e4ea] flex flex-col items-start overflow-clip pl-[12px] pr-[20px] py-[10px] self-stretch">
+                                <div className="relative shrink-0 w-[20px] h-[20px]">
+                                  <MoreVertical className="w-[20px] h-[20px] text-[#64748b]" />
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+
+                      {/* Pagination */}
+                      <div className="flex gap-[24px] items-center w-full mt-[20px]">
+                        {/* Left - Page info */}
+                        <div className="flex items-center px-0 py-[6px] w-[200px]">
+                          <p className="font-['Inter'] leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                            Page 2 of 16
+                          </p>
+                        </div>
+
+                        {/* Center - Pagination controls */}
+                        <div className="flex-1 flex gap-[8px] items-center justify-center">
+                          {/* First page */}
+                          <button className="flex items-center justify-center p-[6px] rounded-[8px] hover:bg-[#f2f2f2]">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M15.8333 10H4.16667M4.16667 10L10 15.8333M4.16667 10L10 4.16667" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M11.6667 10H4.16667M4.16667 10L8.33333 15.8333M4.16667 10L8.33333 4.16667" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+
+                          {/* Previous page */}
+                          <button className="flex items-center justify-center p-[6px] rounded-[8px] hover:bg-[#f2f2f2]">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M12.5 15L7.5 10L12.5 5" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+
+                          {/* Page numbers */}
+                          <div className="flex gap-[8px] items-center justify-center">
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                1
+                              </p>
+                            </button>
+                            <button className="bg-[#f5f7fa] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                2
+                              </p>
+                            </button>
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                3
+                              </p>
+                            </button>
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                4
+                              </p>
+                            </button>
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                5
+                              </p>
+                            </button>
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                ...
+                              </p>
+                            </button>
+                            <button className="bg-white border border-[#e1e4ea] flex flex-col items-start p-[6px] rounded-[8px]">
+                              <p className="font-['Inter'] font-medium leading-[20px] text-[14px] text-[#525866] text-center tracking-[-0.084px] w-[20px]">
+                                16
+                              </p>
+                            </button>
+                          </div>
+
+                          {/* Next page */}
+                          <button className="flex items-center justify-center p-[6px] rounded-[8px] hover:bg-[#f2f2f2]">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M7.5 5L12.5 10L7.5 15" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+
+                          {/* Last page */}
+                          <button className="flex items-center justify-center p-[6px] rounded-[8px] hover:bg-[#f2f2f2]">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M4.16667 10H15.8333M15.8333 10L10 4.16667M15.8333 10L10 15.8333" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M8.33333 10H15.8333M15.8333 10L11.6667 4.16667M15.8333 10L11.6667 15.8333" stroke="#525866" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Right - Items per page */}
+                        <div className="flex flex-col items-end justify-center w-[200px]">
+                          <button className="bg-white border border-[#e1e4ea] flex gap-[2px] items-center pl-[10px] pr-[6px] py-[6px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)]">
+                            <p className="font-['Inter'] leading-[20px] text-[14px] text-[#525866] tracking-[-0.084px]">
+                              7 / page
+                            </p>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M5 7.5L10 12.5L15 7.5" stroke="#99A0AE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

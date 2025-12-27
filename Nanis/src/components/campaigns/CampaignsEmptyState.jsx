@@ -69,7 +69,11 @@ const CampaignsEmptyState = () => {
       {/* Action Buttons */}
       <div className="content-stretch flex gap-[16px] items-start relative shrink-0">
         <PrimaryButton
-          onClick={() => navigate('/campaigns/create')}
+          onClick={() => {
+            // Clear any existing draft to start fresh
+            localStorage.removeItem('campaign_draft');
+            navigate('/campaigns/create');
+          }}
           icon={
             <div className="overflow-clip relative shrink-0 size-[18px]">
               <img 

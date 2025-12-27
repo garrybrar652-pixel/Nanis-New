@@ -14,6 +14,8 @@ const StepHeader = ({
   description, 
   onBack,
   onEdit,
+  onSend,
+  sendButtonDisabled = false,
   showBackButton = true,
   variant = 'default', // 'default' | 'detail'
   maxWidth = 'max-w-[536px]'
@@ -71,7 +73,11 @@ const StepHeader = ({
         </div>
         
         {/* Right side: Send button */}
-        <PrimaryButton size='lg' >
+        <PrimaryButton 
+          size='lg' 
+          onClick={onSend}
+          disabled={sendButtonDisabled}
+        >
           Send
         </PrimaryButton>
       </div>

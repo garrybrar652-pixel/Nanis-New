@@ -47,7 +47,7 @@ const SubjectsSection = ({
   if (!isExpanded) {
     return (
       <div 
-        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[20px] py-[16px] flex items-center gap-[14px] w-full cursor-pointer"
+        className="bg-white border-[1.3px] border-[#e1e4ea] rounded-[12px] px-[20px] py-[16px] flex items-center gap-[14px] w-full cursor-pointer transition-colors"
         onClick={onExpand}
       >
         <StatusIndicator isCompleted={isCompleted} />
