@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
 import { useEditor } from '../shared/EditorContext';
-import { EditorBlock } from '../shared/editorConfig';
+import EditorBlock from '../shared/EditorBlock';
 import { renderToStaticMarkup } from '@usewaypoint/email-builder';
 import { editorTheme } from '../shared/editorTheme';
 

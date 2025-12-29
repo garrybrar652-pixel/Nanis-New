@@ -1,6 +1,8 @@
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { useEditor } from '../../shared/EditorContext';
+import { createBlock, generateBlockId } from '../../shared/blockDefaults';
+import EditorBlock from '../../shared/EditorBlock';
 import { useState } from 'react';
 
 // Font family helper
@@ -21,7 +23,11 @@ function getFontFamily(fontFamily) {
 
 export default function EmailLayoutEditor(props) {
   const { document, setDocument, setSelectedBlockId } = useEditor();
-  const childrenIds = props.childrenIds || [];
+  
+  // Get childrenIds from the root block in the document for real-time updates
+  const rootBlock = document.root;
+  const childrenIds = rootBlock?.data?.childrenIds || props.childrenIds || [];
+  
   const [currentBlockId, setCurrentBlockId] = useState('root');
 
   // Make the email layout a droppable area
@@ -31,14 +37,12 @@ export default function EmailLayoutEditor(props) {
   });
 
   // Handle adding a new block
-  const handleAddBlock = (blockType, blockData) => {
-    const newBlockId = `block-${Date.now()}`;
+  const handleAddBlock = (blockType) => {
+    const newBlockId = generateBlockId();
+    const newBlock = createBlock(blockType);
     
     setDocument({
-      [newBlockId]: {
-        type: blockType,
-        data: blockData,
-      },
+      [newBlockId]: newBlock,
       [currentBlockId]: {
         type: 'EmailLayout',
         data:  {
@@ -158,11 +162,7 @@ function EditorChildrenIds({ childrenIds, onAddBlock, onRemoveBlock, onReorder }
           <p className="text-gray-500 mb-4">Drop blocks here or click to add</p>
           <button
             onClick={() => {
-              // Show block picker
-              onAddBlock('Text', {
-                style: { padding: { top: 16, bottom: 16, right: 24, left: 24 } },
-                props: { text: 'Enter your text here.. .' },
-              });
+              onAddBlock('Text');
             }}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
@@ -191,10 +191,7 @@ function EditorChildrenIds({ childrenIds, onAddBlock, onRemoveBlock, onReorder }
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
                 <button
                   onClick={() => {
-                    onAddBlock('Text', {
-                      style: { padding: { top: 16, bottom: 16, right: 24, left: 24 } },
-                      props: { text: 'New text block' },
-                    });
+                    onAddBlock('Text');
                   }}
                   className="px-3 py-1 bg-indigo-600 text-white text-xs rounded-full hover:bg-indigo-700 shadow-lg"
                 >
@@ -208,7 +205,7 @@ function EditorChildrenIds({ childrenIds, onAddBlock, onRemoveBlock, onReorder }
               blockType={block.type}
               onRemove={() => onRemoveBlock(childId)}
             >
-              {renderBlockEditor(block, childId)}
+              <EditorBlock id={childId} />
             </SortableBlockWrapper>
           </div>
         );
@@ -288,31 +285,4 @@ function SortableBlockWrapper({ id, blockType, children, onRemove }) {
   );
 }
 
-// Import useSortable
-import { useSortable } from '@dnd-kit/sortable';
-
-// Render appropriate editor based on block type
-function renderBlockEditor(block, blockId) {
-  const EditorComponent = BLOCK_EDITORS[block.type];
-  
-  if (!EditorComponent) {
-    return <div className="p-4 bg-yellow-100 text-yellow-800">Unknown block type:  {block.type}</div>;
-  }
-
-  return <EditorComponent {... block.data} blockId={blockId} />;
-}
-
-// Map of block types to their editor components
-const BLOCK_EDITORS = {
-  Text: TextBlockEditor,
-  Heading: HeadingBlockEditor,
-  Button: ButtonBlockEditor,
-  Image: ImageBlockEditor,
-  // Add more as needed
-};
-
-// Import the individual block editors (we'll create these next)
-import TextBlockEditor from './TextBlockEditor';
-import HeadingBlockEditor from './HeadingBlockEditor';
-import ButtonBlockEditor from './ButtonBlockEditor';
-import ImageBlockEditor from './ImageBlockEditor';
+// Import useSortable at the top (already imported above)

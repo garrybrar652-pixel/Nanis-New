@@ -98,7 +98,10 @@ export const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
 // Build the core EditorBlock component
 const CoreEditorBlock = buildBlockComponent(EDITOR_DICTIONARY);
 
-// Wrap EditorBlock to handle unknown types and errors gracefully
+// Export the core component for use in EditorBlock.jsx wrapper
+export const BaseEditorBlock = CoreEditorBlock;
+
+// Wrap EditorBlock to handle unknown types and errors gracefully (not used anymore, kept for reference)
 export const EditorBlock = (props) => {
   // Check if the block type exists in dictionary
   const blockType = props?.type;
