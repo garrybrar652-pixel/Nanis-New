@@ -54,4 +54,20 @@ class User extends Authenticatable
             'is_verified' => 'boolean',
         ];
     }
+
+    /**
+     * Get all contacts owned by this user.
+     */
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
+
+    /**
+     * Get all groups owned by this user.
+     */
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
 }

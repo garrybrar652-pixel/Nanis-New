@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X, Search, Plus } from 'lucide-react';
 import StatusIndicator from '../../../../common/StatusIndicator';
+import api from '../../../../../services/api';
 
 /**
  * RecipientsSection Component
@@ -25,17 +26,66 @@ const RecipientsSection = ({
   const [sendToDropdownOpen, setSendToDropdownOpen] = useState(false);
   const [excludeDropdownOpen, setExcludeDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [allSegments, setAllSegments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalContacts, setTotalContacts] = useState(0);
 
-  // Mock segment data - in production, this would come from an API
-  const allSegments = [
-    { id: 1, name: 'All contacts', count: 123, type: 'all' },
-    { id: 2, name: 'Crypto Traders', count: 14, type: 'tag' },
-    { id: 3, name: 'Forex Trader', count: 343, type: 'tag' },
-    { id: 4, name: 'Startup Owner', count: 12, type: 'tag' },
-    { id: 5, name: 'Based in Dubai', count: 2315, type: 'segment' },
-    { id: 6, name: 'Average 20-32 years old', count: 6432, type: 'segment' },
-    { id: 7, name: 'United states of America', count: 10, type: 'location' },
-  ];
+  // Fetch actual groups and contacts data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [groupsResponse, contactsResponse] = await Promise.all([
+          api.get('/api/groups'),
+          api.get('/api/contacts')
+        ]);
+
+        console.log(groupsResponse)
+
+        const groups = groupsResponse.data || [];
+
+        // Normalize contacts response - support paginated or array responses
+        const contactsData = contactsResponse.data;
+        const allContactsCount = (contactsData && typeof contactsData === 'object')
+          ? (contactsData.total ?? contactsData.data?.length ?? (Array.isArray(contactsData) ? contactsData.length : 0))
+          : 0;
+
+        setTotalContacts(allContactsCount);
+
+        
+        console.log('Total contacts count:', allContactsCount);
+
+        // Build segments array from groups (be defensive about group counts)
+        const segments = [
+          {
+            id: 'all',
+            name: 'All contacts',
+            count: allContactsCount,
+            type: 'all'
+          },
+          ...groups.map(group => ({
+            id: `group_${group.id}`,
+            name: group.name,
+            count: group.contact_count || group.contacts_count || (Array.isArray(group.contacts) ? group.contacts.length : 0) || 0,
+            type: 'group',
+            description: group.description
+          }))
+        ];
+
+        setAllSegments(segments);
+      } catch (error) {
+        console.error('Failed to fetch contacts and groups:', error);
+        // Fallback to showing at least "All contacts"
+        setAllSegments([
+          { id: 'all', name: 'All contacts', count: 0, type: 'all' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Exclusion options data
   const exclusionOptions = [
@@ -247,105 +297,78 @@ const RecipientsSection = ({
 
               {/* Segment List */}
               <div className="max-h-[280px] overflow-y-auto">
-                {/* All Contacts Section */}
-                {filteredSegments.some(s => s.type === 'all') && (
+                {loading ? (
+                  <div className="px-4 py-8 text-center">
+                    <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px]">
+                      Loading contacts and groups...
+                    </span>
+                  </div>
+                ) : filteredSegments.length === 0 ? (
+                  <div className="px-4 py-8 text-center">
+                    <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px]">
+                      No groups found
+                    </span>
+                  </div>
+                ) : (
                   <>
-                    <button
-                      onClick={() => toggleSegment(filteredSegments.find(s => s.type === 'all').id)}
-                      className={`w-full h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#f8fafc] transition-colors ${
-                        selectedSegments.includes(filteredSegments.find(s => s.type === 'all')?.id) ? 'bg-[#f8fafc]' : 'bg-white'
-                      }`}
-                    >
-                      <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
-                        {filteredSegments.find(s => s.type === 'all').name}
-                      </span>
-                      <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
-                        {filteredSegments.find(s => s.type === 'all').count} recipients
-                      </span>
-                    </button>
+                    {/* All Contacts Section */}
+                    {filteredSegments.some(s => s.type === 'all') && (
+                      <>
+                        <button
+                          onClick={() => toggleSegment(filteredSegments.find(s => s.type === 'all').id)}
+                          className={`w-full h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#f8fafc] transition-colors ${
+                            selectedSegments.includes(filteredSegments.find(s => s.type === 'all')?.id) ? 'bg-[#f8fafc]' : 'bg-white'
+                          }`}
+                        >
+                          <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
+                            {filteredSegments.find(s => s.type === 'all').name}
+                          </span>
+                          <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
+                            {filteredSegments.find(s => s.type === 'all').count} recipients
+                          </span>
+                        </button>
+                      </>
+                    )}
+
+                    {/* Groups Section */}
+                    {filteredSegments.some(s => s.type === 'group') && (
+                      <>
+                        <div className="h-[36px] px-4 pt-2 pb-[2px] flex items-center">
+                          <span className="font-['Inter_Display',sans-serif] font-medium text-[#64748b] text-[12px] leading-[20px]">
+                            Groups
+                          </span>
+                        </div>
+                        {filteredSegments.filter(s => s.type === 'group').map(segment => (
+                          <button
+                            key={segment.id}
+                            onClick={() => toggleSegment(segment.id)}
+                            className={`w-full min-h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#f8fafc] transition-colors ${
+                              selectedSegments.includes(segment.id) ? 'bg-[#f8fafc]' : 'bg-white'
+                            }`}
+                          >
+                            <div className="flex flex-col items-start flex-1">
+                              <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
+                                {segment.name}
+                              </span>
+                              {segment.description && (
+                                <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[12px] leading-[16px]">
+                                  {segment.description}
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
+                              {segment.count} recipients
+                            </span>
+                          </button>
+                        ))}
+                      </>
+                    )}
                   </>
                 )}
 
-                {/* Tag Section */}
-                {filteredSegments.some(s => s.type === 'tag') && (
-                  <>
-                    <div className="h-[36px] px-4 pt-2 pb-[2px] flex items-center">
-                      <span className="font-['Inter_Display',sans-serif] font-medium text-[#64748b] text-[12px] leading-[20px]">
-                        Tag
-                      </span>
-                    </div>
-                    {filteredSegments.filter(s => s.type === 'tag').map(segment => (
-                      <button
-                        key={segment.id}
-                        onClick={() => toggleSegment(segment.id)}
-                        className={`w-full h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#f8fafc] transition-colors ${
-                          selectedSegments.includes(segment.id) ? 'bg-[#f8fafc]' : 'bg-white'
-                        }`}
-                      >
-                        <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
-                          {segment.name}
-                        </span>
-                        <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
-                          {segment.count} recipients
-                        </span>
-                      </button>
-                    ))}
-                  </>
-                )}
-
-                {/* Saved Segments Section */}
-                {filteredSegments.some(s => s.type === 'segment') && (
-                  <>
-                    <div className="h-[36px] px-4 pt-2 pb-[2px] flex items-center">
-                      <span className="font-['Inter_Display',sans-serif] font-medium text-[#64748b] text-[12px] leading-[20px]">
-                        Saved segments
-                      </span>
-                    </div>
-                    {filteredSegments.filter(s => s.type === 'segment').map(segment => (
-                      <button
-                        key={segment.id}
-                        onClick={() => toggleSegment(segment.id)}
-                        className={`w-full h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#ededed] transition-colors ${
-                          selectedSegments.includes(segment.id) ? 'bg-[#ededed]' : 'bg-white'
-                        }`}
-                      >
-                        <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
-                          {segment.name}
-                        </span>
-                        <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
-                          {segment.count} recipients
-                        </span>
-                      </button>
-                    ))}
-                  </>
-                )}
-
-                {/* Location Section */}
-                {filteredSegments.some(s => s.type === 'location') && (
-                  <>
-                    <div className="h-[36px] px-4 pt-2 pb-[2px] flex items-center">
-                      <span className="font-['Inter_Display',sans-serif] font-medium text-[#64748b] text-[12px] leading-[20px]">
-                        Location
-                      </span>
-                    </div>
-                    {filteredSegments.filter(s => s.type === 'location').map(segment => (
-                      <button
-                        key={segment.id}
-                        onClick={() => toggleSegment(segment.id)}
-                        className={`w-full h-[36px] px-4 py-2 flex items-center justify-between gap-2 hover:bg-[#f8fafc] transition-colors ${
-                          selectedSegments.includes(segment.id) ? 'bg-[#f8fafc]' : 'bg-white'
-                        }`}
-                      >
-                        <span className="font-['Inter_Display',sans-serif] font-medium text-[#232933] text-[14px] leading-[20px]">
-                          {segment.name}
-                        </span>
-                        <span className="font-['Inter_Display',sans-serif] font-normal text-[#64748b] text-[14px] leading-[20px] whitespace-nowrap">
-                          {segment.count} recipients
-                        </span>
-                      </button>
-                    ))}
-                  </>
-                )}
+                {/* Tag Section - Removed as we're using Groups */}
+                {/* Saved Segments Section - Removed as we're using Groups */}
+                {/* Location Section - Removed as we're using Groups */}
               </div>
             </div>
           )}

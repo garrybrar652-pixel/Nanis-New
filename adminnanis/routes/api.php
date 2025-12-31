@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ContactController as APIContactController;
+use App\Http\Controllers\API\GroupController as APIGroupController;
 use App\Http\Controllers\CampaignController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,10 +22,36 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Sanctum CSRF cookie route (required for SPA authentication)
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['message' => 'CSRF cookie set']);
+});
+
 // Authentication Routes
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+});
+
+// Protected Contact & Group Routes (require authentication)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('contacts')->group(function () {
+        Route::get('/', [APIContactController::class, 'index']); // List contacts (with filters)
+        Route::post('/', [APIContactController::class, 'store']); // Create contact
+        Route::get('/email', [APIContactController::class, 'getByEmail']); // Get contact by email
+        Route::put('/email', [APIContactController::class, 'updateByEmail']); // Update contact by email
+        Route::post('/subscription', [APIContactController::class, 'toggleSubscription']); // Subscribe/Unsubscribe
+        Route::delete('/email', [APIContactController::class, 'destroyByEmail']); // Delete by email
+        Route::get('/{id}', [APIContactController::class, 'show']); // Get single contact
+        Route::put('/{id}', [APIContactController::class, 'update']); // Update contact
+        Route::delete('/{id}', [APIContactController::class, 'destroy']); // Delete contact
+    });
+
+    Route::prefix('groups')->group(function () {
+        Route::get('/', [APIGroupController::class, 'index']); // List all groups
+        Route::get('/{id}', [APIGroupController::class, 'show']); // Get single group
+        Route::get('/{id}/contacts', [APIGroupController::class, 'contacts']); // Get group contacts
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
