@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ASSETS from '../../constants/assets';
 import { useActiveMenu } from '../../hooks/useActiveMenu';
-import { useAuth } from '../../contexts/AuthContext';
+import ProfileSection from './ProfileSection';
 import {
   HomeIcon,
   AnnouncementIcon,
@@ -18,20 +16,6 @@ import {
 } from '../icons';
 
 const Sidebar = ({ onClose }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setShowDropdown(false);
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
   const menuItems = [
     { IconComponent: HomeIcon, label: 'Dashboard', path: '/dashboard' },
     { IconComponent: AnnouncementIcon, label: 'Campaigns', path: '/campaigns' },
@@ -234,74 +218,7 @@ const Sidebar = ({ onClose }) => {
       </div>
 
       {/* User Profile */}
-      <div className="relative w-[228px] shrink-0">
-        <button 
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="bg-white flex gap-[12px] items-center overflow-clip pl-[10px] pr-[14px] py-[8px] relative rounded-[68px] shadow-[0px_1px_1px_1px_rgba(129,136,152,0.04),0px_2px_2px_0px_rgba(129,136,152,0.12),0px_0px_0px_1.5px_rgba(129,136,152,0.02)] w-full hover:shadow-md animate-selection" 
-          data-name="User Info Container" 
-          data-node-id="61:738"
-        >
-        <div className="bg-[#c0eaff] overflow-clip relative rounded-[32px] shrink-0 size-[38px]" data-name="User Avatar Container" data-node-id="61:739">
-          <div className="absolute left-1/2 rounded-[999px] size-[38px] top-1/2 translate-x-[-50%] translate-y-[-50%]" data-name="image" data-node-id="61:740">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px]">
-              <img 
-                alt="User Avatar" 
-                className="absolute left-[-10.31%] max-w-none size-[122.5%] top-[-3.67%]" 
-                src={user?.avatar || ASSETS.USER_AVATAR} 
-              />
-            </div>
-          </div>
-        </div>
-        <div className="basis-0 flex flex-col gap-[2px] grow items-start min-h-px min-w-px relative shrink-0" data-name="User Info Text Container" data-node-id="61:741">
-          <div className="flex gap-[4px] items-center relative shrink-0 w-full" data-name="User Name Container" data-node-id="61:742">
-            <p className="font-semibold leading-[20px] not-italic relative shrink-0 text-[#3f3f46] text-[14px] text-nowrap tracking-[-0.14px]" data-node-id="61:743">
-              {user?.name || 'User'}
-            </p>
-            {user?.is_verified && (
-              <div className="relative shrink-0 size-[14px]" data-name="Verified Icon" data-node-id="61:744">
-                <img 
-                  alt="Verified" 
-                  className="block max-w-none size-full" 
-                  src={ASSETS.ICON_VERIFIED} 
-                />
-              </div>
-            )}
-          </div>
-          <p className="font-normal leading-[16px] not-italic relative shrink-0 text-[#525866] text-[12px] tracking-[-0.12px] w-full" data-node-id="61:745">
-            {user?.job_title || 'No job title'}
-          </p>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[18px]" data-name="chevron-selector-vertical" data-node-id="61:746">
-          <img 
-            alt="Dropdown" 
-            className="block max-w-none size-full" 
-            src={ASSETS.ICON_CHEVRON_SELECTOR} 
-          />
-        </div>
-      </button>
-
-      {/* Dropdown Menu */}
-      {showDropdown && (
-        <>
-          {/* Backdrop to close on outside click */}
-          <div 
-            className="fixed inset-0 z-10" 
-            onClick={() => setShowDropdown(false)}
-          />
-          
-          {/* Menu positioned above button */}
-          <div className="absolute left-0 bottom-full mb-[8px] bg-white rounded-[12px] shadow-[0px_4px_8px_0px_rgba(84,87,96,0.14),0px_8px_16px_0px_rgba(84,87,96,0.12),0px_0px_0px_1.5px_rgba(84,87,96,0.04)] py-[8px] w-full z-20">
-            <button 
-              onClick={handleLogout}
-              className="w-full flex gap-[8px] items-center px-[12px] py-[8px] hover:bg-gray-50 animate-selection text-left"
-            >
-              <LogOut className="w-[18px] h-[18px] text-[#525866]" />
-              <span className="font-medium text-[14px] text-[#0f172a] tracking-[-0.14px]">Logout</span>
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+      <ProfileSection />
     </div>
   );
 };

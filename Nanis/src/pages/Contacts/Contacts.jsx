@@ -12,12 +12,7 @@ const Contacts = () => {
       }}
     >
       <div>
-        <h2 style={{ color: '#0e121b', fontSize: '20px', fontWeight: '600', marginBottom: '16px' }}>
-          Contacts
-        </h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>
-          Contacts content will be implemented here.
-        </p>
+        
       </div>
     </div>
   );

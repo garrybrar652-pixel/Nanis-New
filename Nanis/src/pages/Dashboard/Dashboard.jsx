@@ -15,12 +15,7 @@ const Dashboard = () => {
     >
       {/* Dashboard Content Goes Here */}
       <div>
-        <h2 style={{ color: '#0e121b', fontSize: '20px', fontWeight: '600', marginBottom: '16px' }}>
-          Dashboard
-        </h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>
-          Dashboard content will be implemented here.
-        </p>
+        
       </div>
     </div>
   );

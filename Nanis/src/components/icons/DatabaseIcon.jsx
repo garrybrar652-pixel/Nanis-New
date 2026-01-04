@@ -1,7 +1,7 @@
 const DatabaseIcon = ({ isActive }) => {
   if (isActive) {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 17" fill="none">
         <defs>
           <filter id="filter0_i_database" x="0" y="0" width="15" height="18" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="BackgroundImageFix"/>
@@ -26,7 +26,7 @@ const DatabaseIcon = ({ isActive }) => {
   }
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 15 17" fill="none">
       <path d="M8.8999 14.1499C8.8999 14.9783 8.22833 15.6499 7.3999 15.6499C6.57148 15.6499 5.8999 14.9783 5.8999 14.1499M8.8999 14.1499C8.8999 13.3215 8.22833 12.6499 7.3999 12.6499M8.8999 14.1499H14.1499M5.8999 14.1499C5.8999 13.3215 6.57148 12.6499 7.3999 12.6499M5.8999 14.1499H0.649902M7.3999 12.6499V9.6499M14.1499 2.8999C14.1499 4.14254 11.1278 5.1499 7.3999 5.1499C3.67198 5.1499 0.649902 4.14254 0.649902 2.8999M14.1499 2.8999C14.1499 1.65726 11.1278 0.649902 7.3999 0.649902C3.67198 0.649902 0.649902 1.65726 0.649902 2.8999M14.1499 2.8999V7.3999C14.1499 8.6449 11.1499 9.6499 7.3999 9.6499M0.649902 2.8999V7.3999C0.649902 8.6449 3.6499 9.6499 7.3999 9.6499" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );

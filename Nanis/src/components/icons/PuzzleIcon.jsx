@@ -1,7 +1,7 @@
 const PuzzleIcon = ({ isActive }) => {
   if (isActive) {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 17 17" fill="none">
         <defs>
           <filter id="filter0_i_puzzle" x="0" y="0" width="16.5" height="18" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="BackgroundImageFix"/>
@@ -26,7 +26,7 @@ const PuzzleIcon = ({ isActive }) => {
   }
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 17 17" fill="none">
       <path d="M8.15039 0.649902L10.8504 3.3499C12.6504 -1.3751 17.6754 3.6499 12.9504 5.4499L15.6504 8.1499L12.9504 10.8499C11.1504 6.1249 6.12539 11.1499 10.8504 12.9499L8.15039 15.6499L5.45039 12.9499C3.65039 17.6749 -1.37461 12.6499 3.35039 10.8499L0.650391 8.1499L3.35039 5.4499C5.15039 10.1749 10.1754 5.1499 5.45039 3.3499L8.15039 0.649902Z" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );

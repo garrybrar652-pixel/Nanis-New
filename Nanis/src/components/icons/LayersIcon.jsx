@@ -1,7 +1,7 @@
 const LayersIcon = ({ isActive }) => {
   if (isActive) {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 17 17" fill="none">
         <defs>
           <filter id="filter0_i_layers" x="0" y="0" width="16.5" height="17.9114" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="BackgroundImageFix"/>
@@ -36,7 +36,7 @@ const LayersIcon = ({ isActive }) => {
   }
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 17 17" fill="none">
       <path d="M4.40039 6.23064L0.650391 8.10564L7.88206 11.7215C7.98045 11.7707 8.02964 11.7953 8.08124 11.8049C8.12694 11.8135 8.17384 11.8135 8.21954 11.8049C8.27114 11.7953 8.32033 11.7707 8.41872 11.7215L15.6504 8.10564L11.9004 6.23064M4.40039 9.98064L0.650391 11.8556L7.88206 15.4715C7.98045 15.5207 8.02964 15.5453 8.08124 15.5549C8.12694 15.5635 8.17384 15.5635 8.21954 15.5549C8.27114 15.5453 8.32033 15.5207 8.41872 15.4715L15.6504 11.8556L11.9004 9.98064M0.650391 4.35564L7.88206 0.739804C7.98045 0.69061 8.02964 0.666014 8.08124 0.656333C8.12694 0.647759 8.17384 0.647759 8.21954 0.656333C8.27114 0.666014 8.32033 0.69061 8.41872 0.739804L15.6504 4.35564L8.41872 7.97148C8.32033 8.02067 8.27114 8.04527 8.21954 8.05495C8.17384 8.06352 8.12694 8.06352 8.08124 8.05495C8.02964 8.04527 7.98045 8.02067 7.88206 7.97148L0.650391 4.35564Z" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );

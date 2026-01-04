@@ -74,6 +74,14 @@ class Campaign extends Model
     }
 
     /**
+     * Get the groups associated with the campaign.
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+    /**
      * Scope a query to only include campaigns of a given status.
      */
     public function scopeStatus($query, $status)

@@ -1,10 +1,11 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
 const MainLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Map routes to page titles
@@ -24,6 +25,25 @@ const MainLayout = () => {
     };
     
     return titleMap[path] || 'Dashboard';
+  };
+
+  // Map routes to button text and navigation
+  const getButtonConfig = () => {
+    const path = location.pathname;
+    const buttonMap = {
+      '/dashboard': { text: 'New campaign', route: '/campaigns/create' },
+      '/campaigns': { text: 'New campaign', route: '/campaigns/create' },
+      '/automation': { text: 'New automation', route: '/automation/create' },
+      '/inbox': { text: 'New chat', route: '/inbox/create' },
+      '/analytics': { text: 'New campaign', route: '/campaigns/create' },
+      '/templates': { text: 'Add new template', route: '/templates/create' },
+      '/contacts': { text: 'Add new contact', route: '/contacts/create' },
+      '/integrations': { text: 'Add new integration', route: '/integrations/create' },
+      '/settings': { text: 'New campaign', route: '/campaigns/create' },
+      '/help': { text: 'New campaign', route: '/campaigns/create' }
+    };
+    
+    return buttonMap[path] || { text: 'New campaign', route: '/campaigns/create' };
   };
 
   // Check if current route should hide header
@@ -58,11 +78,19 @@ const MainLayout = () => {
           <Header 
             title={getPageTitle()} 
             onMenuClick={() => setIsMobileMenuOpen(true)}
+            buttonText={getButtonConfig().text}
+            onButtonClick={() => {
+              const route = getButtonConfig().route;
+              if (route) {
+                localStorage.removeItem('campaign_draft');
+                navigate(route);
+              }
+            }}
           />
         )}
 
         {/* Page Content Area - Scrollable */}
-        <div className={`flex-1 bg-[#ededed] overflow-auto ${shouldHideHeader() ? '' : 'px-[16px] lg:px-[20px] pb-[20px] pt-[20px]'}`} data-name="Value" data-node-id="16:7641">
+        <div className={`flex-1 bg-[#ededed] overflow-auto ${shouldHideHeader() ? '' : 'pr-[16px] lg:pr-[20px] pb-[20px]'}`} data-name="Value" data-node-id="16:7641">
           <Outlet />
         </div>
       </div>

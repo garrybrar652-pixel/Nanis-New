@@ -117,11 +117,12 @@ const EmailCampaignDetail = ({ onBack }) => {
           recipients: formData.recipients,
         }),
         status: formData.schedule?.sendType === 'immediate' || formData.schedule?.sendType === 'now'
-          ? 'sending'
+          ? 'draft'  // Changed to draft - will be sent via /send endpoint
           : formData.schedule?.sendType === 'scheduled'
           ? 'scheduled'
           : 'draft',
         total_recipients: totalRecipients,
+        group_ids: formData.recipients?.lists || [], // Add group_ids for backend
       };
 
       // Only include scheduled_at if it's actually scheduled
@@ -135,6 +136,15 @@ const EmailCampaignDetail = ({ onBack }) => {
       const response = await campaignService.createCampaign(campaignData);
 
       if (response.success) {
+        // If send now, trigger send endpoint
+        if (formData.schedule?.sendType === 'immediate' || formData.schedule?.sendType === 'now') {
+          const sendResponse = await campaignService.sendCampaign(response.data.id);
+          if (!sendResponse.success) {
+            setSaveError('Campaign created but failed to send: ' + sendResponse.message);
+            return;
+          }
+        }
+        
         setShowConfirmModal(false);
         // Redirect to campaigns page
         navigate('/campaigns');

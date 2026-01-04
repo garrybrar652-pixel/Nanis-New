@@ -2,8 +2,10 @@
 import { useNavigate } from 'react-router-dom';
 import ASSETS from '../../constants/assets';
 import PrimaryButton from '../common/Button';
+import SearchBar from '../common/SearchBar';
+import PlusIcon from '../icons/PlusIcon';
 
-const Header = ({ title = 'Dashboard', onMenuClick }) => {
+const Header = ({ title = 'Dashboard', onMenuClick, buttonText = 'New campaign', onButtonClick }) => {
   const navigate = useNavigate();
   return (
     <div 
@@ -38,27 +40,8 @@ const Header = ({ title = 'Dashboard', onMenuClick }) => {
 
       {/* Right Section - Search and Actions */}
       <div className="flex gap-[16px] items-center">
-        {/* Search Bar - Hidden on mobile, visible on tablet+ */}
-        <div className="bg-white hidden md:flex gap-[8px] items-center justify-center overflow-clip p-[8px] rounded-[8px] shadow-[0px_2px_6px_0px_rgba(18,55,105,0.04),0px_1px_2px_0px_rgba(18,55,105,0.08),0px_0px_0px_1px_rgba(18,55,105,0.08)] lg:w-[361px] md:w-[280px]">
-          <div className="flex-1 flex gap-[6px] items-center min-h-px min-w-px">
-            {/* Search Icon */}
-            <div className="overflow-clip relative shrink-0 w-[18px] h-[18px]">
-              <img alt="Search" className="block w-full h-full object-contain" src={ASSETS.ICON_SEARCH} />
-            </div>
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Search...."
-              className="w-full font-normal leading-[20px] text-[#64748b] text-[14px] tracking-[-0.14px] bg-transparent border-none outline-none placeholder:text-[#64748b]"
-            />
-          </div>
-          {/* Keyboard Shortcut Badge - Hidden on tablet, visible on desktop */}
-          <div className="border border-[#e1e4ea] border-solid hidden lg:flex flex-col items-center justify-center px-[8px] py-[4px] rounded-[4px]">
-            <p className="font-normal leading-[12px] text-[#808897] text-[12px] text-center tracking-[-0.24px]">
-              ⌘K
-            </p>
-          </div>
-        </div>
+        {/* Search Bar Component */}
+        <SearchBar placeholder="Search...." />
 
         {/* Notification Bell */}
         <button className="bg-white flex items-center justify-center overflow-clip p-[8px] rounded-[8px] shadow-[0px_2px_6px_0px_rgba(18,55,105,0.04),0px_1px_2px_0px_rgba(18,55,105,0.08),0px_0px_0px_1px_rgba(18,55,105,0.08)] hover:shadow-md transition-shadow">
@@ -75,18 +58,14 @@ const Header = ({ title = 'Dashboard', onMenuClick }) => {
         </button>
 
         {/* New Campaign Button */}
-        <PrimaryButton
-          onClick={() => {
-            // Clear any existing draft to start fresh
-            localStorage.removeItem('campaign_draft');
-            navigate('/campaigns/create');
-          }}
-          icon={<img alt="Plus" className="block w-full h-full object-contain" src={ASSETS.ICON_PLUS} />}
-          className="lg:w-[164px] md:w-auto pl-[8px] pr-[12px]"
+        <button
+          onClick={onButtonClick}
+          className="flex w-auto md:w-[164px] pl-[8px] pr-[12px] py-[8px] justify-center items-center gap-[4px] rounded-[10px] border-[1px] border-white bg-gradient-to-b from-[#335CFF] to-[#2A52F1] shadow-[0_2px_2px_0_rgba(52,55,72,0.20),_inset_2px_4px_3px_0_rgba(255,255,255,0.08),_0_0_0_1px_#335CFF,_0_0_0_1px_rgba(134,140,152,0.20)] transition-all duration-200 hover:shadow-[0_4px_4px_0_rgba(52,55,72,0.25),_inset_2px_4px_3px_0_rgba(255,255,255,0.1),_0_0_0_1px_#335CFF,_0_0_0_1px_rgba(134,140,152,0.25)] hover:translate-y-[-1px] active:translate-y-[0px]"
         >
+          <PlusIcon className="w-[18px] h-[18px] shrink-0" />
           {/* Text - Hidden on mobile, visible on tablet+ */}
-          <span className="hidden md:block">New campaign</span>
-        </PrimaryButton>
+          <span className="hidden md:block font-medium text-white text-[14px] leading-[20px] tracking-[-0.14px]">{buttonText}</span>
+        </button>
       </div>
     </div>
   );

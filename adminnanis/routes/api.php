@@ -72,3 +72,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/suspend', [CampaignController::class, 'suspend']);
     });
 });
+
+// Public Tracking Routes (no auth required)
+Route::prefix('campaigns')->group(function () {
+    Route::get('/{campaign}/track/open/{contact}', [CampaignController::class, 'trackOpen']);
+    Route::get('/{campaign}/track/click/{contact}', [CampaignController::class, 'trackClick']);
+});

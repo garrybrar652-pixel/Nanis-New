@@ -8,3 +8,6 @@ export { default as UserSquareIcon } from './UserSquareIcon';
 export { default as PuzzleIcon } from './PuzzleIcon';
 export { default as SettingsIcon } from './SettingsIcon';
 export { default as MessageChatIcon } from './MessageChatIcon';
+export { default as ArrowsUpDown } from './ArrowsUpDown';
+export { default as VerifiedIcon } from './VerifiedIcon';
+export { default as SearchIcon } from './SearchIcon';

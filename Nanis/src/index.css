@@ -47,8 +47,8 @@ body {
 
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -56,12 +56,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #E0E0E0;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: #D0D0D0;
 }
 
 /* Line Clamp Utilities */
@@ -81,7 +81,7 @@ body {
 
 /* Focus Visible for Accessibility */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  /* outline: 2px solid var(--color-primary); */
   outline-offset: 2px;
 }
 

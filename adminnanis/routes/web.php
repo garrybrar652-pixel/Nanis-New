@@ -37,6 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 });
 
+// Campaign tracking routes (public - no auth required)
+Route::get('/campaigns/{campaign}/track/open/{contact}', [App\Http\Controllers\CampaignController::class, 'trackOpen'])
+    ->name('campaigns.track.open');
+Route::get('/campaigns/{campaign}/track/click/{contact}', [App\Http\Controllers\CampaignController::class, 'trackClick'])
+    ->name('campaigns.track.click');
+
 require __DIR__ . '/admin.php';
 
 

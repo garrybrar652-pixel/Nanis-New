@@ -85,6 +85,8 @@ class CampaignController extends Controller
             'content' => 'nullable|string',
             'scheduled_at' => 'nullable|date',
             'total_recipients' => 'nullable|integer|min:0',
+            'group_ids' => 'nullable|array',
+            'group_ids.*' => 'integer|exists:groups,id',
         ]);
 
         if ($validator->fails()) {
@@ -109,6 +111,10 @@ class CampaignController extends Controller
                 'scheduled_at' => $request->scheduled_at,
                 'total_recipients' => $request->total_recipients ?? 0,
             ]);
+
+            if ($request->has('group_ids')) {
+                $campaign->groups()->attach($request->group_ids);
+            }
 
             return response()->json([
                 'success' => true,
@@ -167,6 +173,8 @@ class CampaignController extends Controller
             'sent_count' => 'nullable|integer|min:0',
             'opened_count' => 'nullable|integer|min:0',
             'clicked_count' => 'nullable|integer|min:0',
+            'group_ids' => 'nullable|array',
+            'group_ids.*' => 'integer|exists:groups,id',
         ]);
 
         if ($validator->fails()) {
@@ -193,6 +201,10 @@ class CampaignController extends Controller
                 'preview', 'content', 'scheduled_at', 'total_recipients',
                 'sent_count', 'opened_count', 'clicked_count'
             ]));
+
+            if ($request->has('group_ids')) {
+                $campaign->groups()->sync($request->group_ids);
+            }
 
             return response()->json([
                 'success' => true,
@@ -308,8 +320,8 @@ class CampaignController extends Controller
                 'sent_at' => now()
             ]);
 
-            // TODO: Dispatch job to send campaign emails
-            // SendCampaignJob::dispatch($campaign);
+            // Dispatch job to send campaign emails
+            \App\Jobs\SendCampaignJob::dispatch($campaign);
 
             return response()->json([
                 'success' => true,
@@ -394,6 +406,47 @@ class CampaignController extends Controller
                 'message' => 'Failed to fetch statistics',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Track email open.
+     */
+    public function trackOpen($campaignId, $contactId)
+    {
+        try {
+            $campaign = Campaign::findOrFail($campaignId);
+            $campaign->increment('opened_count');
+
+            // Return a 1x1 transparent pixel
+            $pixel = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+            return response($pixel)->header('Content-Type', 'image/png');
+        } catch (\Exception $e) {
+            // Log error but don't fail
+            \Log::error('Track open failed: ' . $e->getMessage());
+            $pixel = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+            return response($pixel)->header('Content-Type', 'image/png');
+        }
+    }
+
+    /**
+     * Track email click.
+     */
+    public function trackClick($campaignId, $contactId, Request $request)
+    {
+        try {
+            $campaign = Campaign::findOrFail($campaignId);
+            $campaign->increment('clicked_count');
+
+            $url = $request->get('url');
+            if ($url) {
+                return redirect($url);
+            }
+
+            return response()->json(['message' => 'Click tracked']);
+        } catch (\Exception $e) {
+            \Log::error('Track click failed: ' . $e->getMessage());
+            return redirect('/');
         }
     }
 }
